@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Inventario — Tienda Útiles</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    .filtros { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+    .filtro-btn {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid var(--gray-200);
+      background: var(--white);
+      color: var(--gray-600);
+      cursor: pointer;
+    }
+    .filtro-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    .producto-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .producto-card.stock-bajo { border-left: 3px solid var(--warning); }
+    .producto-card.sin-stock  { border-left: 3px solid var(--danger); }
+
+    .prod-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .prod-nombre { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+    .prod-categoria { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+    .prod-acciones { display: flex; gap: 6px; flex-shrink: 0; }
+    .icon-action {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--gray-600);
+      cursor: pointer;
+    }
+    .icon-action:active { background: var(--gray-200); }
+    .icon-action.edit { color: var(--primary); border-color: var(--primary-light); background: var(--primary-light); }
+    .icon-action.plus { color: var(--success); border-color: var(--success-light); background: var(--success-light); }
+    .icon-action.del  { color: var(--danger);  border-color: var(--danger-light);  background: var(--danger-light); }
+
+    .prod-precios {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 8px;
+    }
+    .precio-item { text-align: center; }
+    .precio-label { font-size: 10px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; margin-bottom: 2px; }
+    .precio-valor { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+    .precio-valor.green { color: var(--success); }
+    .precio-valor.purple { color: var(--primary); }
+    .precio-valor.red { color: var(--danger); }
+    .precio-valor.amber { color: var(--warning); }
+
+    .ganancia-pct {
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--gray-900); margin-bottom: 18px; }
+    .form-row { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+
+    .stock-ctrl { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .stock-num {
+      flex: 1; text-align: center;
+      font-size: 32px; font-weight: 700;
+      color: var(--gray-900);
+    }
+    .stock-btn {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--gray-200);
+      background: var(--gray-50);
+      font-size: 24px; font-weight: 300;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--gray-800);
+    }
+    .stock-btn:active { background: var(--gray-200); }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="title">Inventario</div>
+    <button class="icon-btn" id="btnNuevo" aria-label="Nuevo producto">
+      <i class="ti ti-plus" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <main class="page-content">
+
+    <div class="search-bar">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" id="buscador" placeholder="Buscar producto...">
+    </div>
+
+    <div class="filtros">
+      <button class="filtro-btn active" data-filtro="todos">Todos</button>
+      <button class="filtro-btn" data-filtro="bajo">Stock bajo</button>
+      <button class="filtro-btn" data-filtro="sin">Sin stock</button>
+    </div>
+
+    <div id="listaProductos">
+      <div style="text-align:center;padding:40px;"><div class="spinner"></div></div>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="nav-item">
+      <i class="ti ti-home" aria-hidden="true"></i>Inicio
+    </a>
+    <a href="ventas.html" class="nav-item">
+      <i class="ti ti-shopping-cart" aria-hidden="true"></i>Venta
+    </a>
+    <a href="inventario.html" class="nav-item active">
+      <i class="ti ti-package" aria-hidden="true"></i>Inventario
+    </a>
+    <a href="cotizaciones.html" class="nav-item">
+      <i class="ti ti-file-text" aria-hidden="true"></i>Cotizar
+    </a>
+  </nav>
+
+  <!-- MODAL: Nuevo / Editar producto -->
+  <div class="modal-overlay hidden" id="modalProducto">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modalTitulo">Nuevo producto</div>
+      <input type="hidden" id="productoId">
+
+      <div class="form-group">
+        <label class="form-label" for="pNombre">Nombre</label>
+        <input class="form-input" type="text" id="pNombre" placeholder="Ej: Cuaderno A4 rayado">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="pCategoria">Categoría</label>
+        <input class="form-input" type="text" id="pCategoria" placeholder="Ej: Cuadernos, Lapiceros...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="pCosto">Costo (S/)</label>
+          <input class="form-input" type="number" id="pCosto" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pPrecio">Precio venta (S/)</label>
+          <input class="form-input" type="number" id="pPrecio" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+        </div>
+      </div>
+
+      <div id="gananciaPrev" style="background:var(--success-light);color:#065f46;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;display:none;">
+        <i class="ti ti-trending-up" aria-hidden="true"></i>
+        <span id="gananciaTexto"></span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="pStock">Stock inicial</label>
+          <input class="form-input" type="number" id="pStock" placeholder="0" min="0" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pStockMin">Alerta de stock</label>
+          <input class="form-input" type="number" id="pStockMin" placeholder="5" min="0" inputmode="numeric">
+        </div>
+      </div>
+
+      <div id="errProducto" style="color:var(--danger);font-size:13px;margin-bottom:10px;display:none;"></div>
+
+      <button class="btn btn-primary" id="btnGuardar" onclick="guardarProducto()">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span id="btnGuardarTexto">Guardar producto</span>
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalProducto')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Reponer stock -->
+  <div class="modal-overlay hidden" id="modalStock">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="stockNombre">Reponer stock</div>
+      <input type="hidden" id="stockProductoId">
+
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:4px;">Stock actual: <strong id="stockActual">0</strong> unidades</p>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px;">¿Cuántas unidades llegaron?</p>
+
+      <div class="stock-ctrl">
+        <button class="stock-btn" id="btnMenos" onclick="cambiarCantidad(-1)">−</button>
+        <div class="stock-num" id="cantidadReponer">1</div>
+        <button class="stock-btn" id="btnMas" onclick="cambiarCantidad(1)">+</button>
+      </div>
+
+      <button class="btn btn-success" onclick="reponerStock()">
+        <i class="ti ti-plus" aria-hidden="true"></i> Agregar al stock
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalStock')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { requireAuth } from '../js/auth.js'
+    import { getProductos, crearProducto, editarProducto, eliminarProducto, actualizarStock } from '../js/productos.js'
+
+    let productos = []
+    let filtroActual = 'todos'
+    let cantidadReponerVal = 1
+
+    async function init() {
+      await requireAuth()
+      await cargarProductos()
+    }
+
+    async function cargarProductos(busqueda = '') {
+      try {
+        productos = await getProductos(busqueda)
+        renderProductos()
+      } catch (e) {
+        mostrarToast('Error al cargar productos')
+      }
+    }
+
+    function renderProductos() {
+      const lista = document.getElementById('listaProductos')
+      let filtrados = productos
+
+      if (filtroActual === 'bajo') filtrados = productos.filter(p => p.stock > 0 && p.stock <= p.stock_min)
+      if (filtroActual === 'sin')  filtrados = productos.filter(p => p.stock === 0)
+
+      if (filtrados.length === 0) {
+        lista.innerHTML = `<div class="empty-state"><i class="ti ti-package"></i><p>No hay productos aquí</p></div>`
+        return
+      }
+
+      lista.innerHTML = filtrados.map(p => {
+        const ganancia = Number(p.precio) - Number(p.costo)
+        const margen   = p.costo > 0 ? ((ganancia / Number(p.costo)) * 100).toFixed(0) : 0
+        const claseCard = p.stock === 0 ? 'sin-stock' : p.stock <= p.stock_min ? 'stock-bajo' : ''
+        const claseStock = p.stock === 0 ? 'red' : p.stock <= p.stock_min ? 'amber' : 'green'
+
+        return `
+          <div class="producto-card ${claseCard}">
+            <div class="prod-header">
+              <div>
+                <div class="prod-nombre">${p.nombre}</div>
+                <div class="prod-categoria">${p.categoria || 'Sin categoría'}</div>
+              </div>
+              <div class="prod-acciones">
+                <div class="icon-action plus" onclick="abrirModalStock('${p.id}')" title="Reponer stock">
+                  <i class="ti ti-plus" aria-hidden="true"></i>
+                </div>
+                <div class="icon-action edit" onclick="abrirEditar('${p.id}')" title="Editar">
+                  <i class="ti ti-edit" aria-hidden="true"></i>
+                </div>
+                <div class="icon-action del" onclick="confirmarEliminar('${p.id}', '${p.nombre.replace(/'/g,"\\'")}') " title="Eliminar">
+                  <i class="ti ti-trash" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+            <div class="prod-precios">
+              <div class="precio-item">
+                <div class="precio-label">Costo</div>
+                <div class="precio-valor">S/ ${Number(p.costo).toFixed(2)}</div>
+              </div>
+              <div class="precio-item">
+                <div class="precio-label">Precio venta</div>
+                <div class="precio-valor purple">S/ ${Number(p.precio).toFixed(2)}</div>
+              </div>
+              <div class="precio-item">
+                <div class="precio-label">Ganancia</div>
+                <div class="precio-valor green">S/ ${ganancia.toFixed(2)}</div>
+                <div class="ganancia-pct" style="color:var(--success);">+${margen}%</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row-between">
+              <span style="font-size:12px;color:var(--gray-400);">Stock disponible</span>
+              <span class="badge badge-${claseStock === 'green' ? 'green' : claseStock === 'amber' ? 'amber' : 'red'}">
+                ${p.stock} unid.
+              </span>
+            </div>
+          </div>`
+      }).join('')
+    }
+
+    window.abrirModalStock = function(id) {
+      const p = productos.find(x => x.id === id)
+      if (!p) return
+      cantidadReponerVal = 1
+      document.getElementById('stockProductoId').value = id
+      document.getElementById('stockNombre').textContent = p.nombre
+      document.getElementById('stockActual').textContent = p.stock
+      document.getElementById('cantidadReponer').textContent = 1
+      document.getElementById('modalStock').classList.remove('hidden')
+    }
+
+    window.cambiarCantidad = function(delta) {
+      cantidadReponerVal = Math.max(1, cantidadReponerVal + delta)
+      document.getElementById('cantidadReponer').textContent = cantidadReponerVal
+    }
+
+    window.reponerStock = async function() {
+      const id = document.getElementById('stockProductoId').value
+      try {
+        await actualizarStock(id, cantidadReponerVal)
+        cerrarModal('modalStock')
+        mostrarToast(`Stock actualizado +${cantidadReponerVal} unidades`)
+        await cargarProductos()
+      } catch (e) {
+        mostrarToast('Error al actualizar stock')
+      }
+    }
+
+    window.abrirEditar = function(id) {
+      const p = productos.find(x => x.id === id)
+      if (!p) return
+      document.getElementById('modalTitulo').textContent = 'Editar producto'
+      document.getElementById('productoId').value  = p.id
+      document.getElementById('pNombre').value     = p.nombre
+      document.getElementById('pCategoria').value  = p.categoria || ''
+      document.getElementById('pCosto').value      = p.costo
+      document.getElementById('pPrecio').value     = p.precio
+      document.getElementById('pStock').value      = p.stock
+      document.getElementById('pStockMin').value   = p.stock_min
+      document.getElementById('btnGuardarTexto').textContent = 'Guardar cambios'
+      actualizarGanancia()
+      document.getElementById('modalProducto').classList.remove('hidden')
+    }
+
+    document.getElementById('btnNuevo').onclick = () => {
+      document.getElementById('modalTitulo').textContent = 'Nuevo producto'
+      document.getElementById('productoId').value  = ''
+      document.getElementById('pNombre').value     = ''
+      document.getElementById('pCategoria').value  = ''
+      document.getElementById('pCosto').value      = ''
+      document.getElementById('pPrecio').value     = ''
+      document.getElementById('pStock').value      = ''
+      document.getElementById('pStockMin').value   = '5'
+      document.getElementById('gananciaPrev').style.display = 'none'
+      document.getElementById('btnGuardarTexto').textContent = 'Guardar producto'
+      document.getElementById('modalProducto').classList.remove('hidden')
+    }
+
+    window.guardarProducto = async function() {
+      const id       = document.getElementById('productoId').value
+      const nombre   = document.getElementById('pNombre').value.trim()
+      const categoria = document.getElementById('pCategoria').value.trim()
+      const costo    = parseFloat(document.getElementById('pCosto').value)
+      const precio   = parseFloat(document.getElementById('pPrecio').value)
+      const stock    = parseInt(document.getElementById('pStock').value) || 0
+      const stockMin = parseInt(document.getElementById('pStockMin').value) || 5
+      const errEl    = document.getElementById('errProducto')
+
+      if (!nombre) { mostrarErr('El nombre es obligatorio'); return }
+      if (isNaN(costo) || costo < 0) { mostrarErr('Ingresa un costo válido'); return }
+      if (isNaN(precio) || precio <= 0) { mostrarErr('Ingresa un precio de venta válido'); return }
+      if (precio < costo) { mostrarErr('El precio de venta no puede ser menor al costo'); return }
+
+      errEl.style.display = 'none'
+      const btn = document.getElementById('btnGuardar')
+      btn.disabled = true
+
+      try {
+        const datos = { nombre, categoria, costo, precio, stock, stock_min: stockMin }
+        if (id) {
+          await editarProducto(id, datos)
+          mostrarToast('Producto actualizado')
+        } else {
+          await crearProducto(datos)
+          mostrarToast('Producto creado')
+        }
+        cerrarModal('modalProducto')
+        await cargarProductos()
+      } catch (e) {
+        mostrarErr('Error al guardar. Intenta de nuevo.')
+      } finally {
+        btn.disabled = false
+      }
+    }
+
+    window.confirmarEliminar = async function(id, nombre) {
+      if (!confirm(`¿Eliminar "${nombre}"? Esta acción no se puede deshacer.`)) return
+      try {
+        await eliminarProducto(id)
+        mostrarToast('Producto eliminado')
+        await cargarProductos()
+      } catch (e) {
+        mostrarToast('Error al eliminar')
+      }
+    }
+
+    window.cerrarModal = function(id) {
+      document.getElementById(id).classList.add('hidden')
+    }
+
+    function actualizarGanancia() {
+      const costo  = parseFloat(document.getElementById('pCosto').value)
+      const precio = parseFloat(document.getElementById('pPrecio').value)
+      const el     = document.getElementById('gananciaPrev')
+      if (!isNaN(costo) && !isNaN(precio) && precio > 0 && costo >= 0) {
+        const ganancia = precio - costo
+        const margen   = costo > 0 ? ((ganancia / costo) * 100).toFixed(0) : 100
+        document.getElementById('gananciaTexto').textContent =
+          `Ganancia: S/ ${ganancia.toFixed(2)} por unidad (+${margen}% margen)`
+        el.style.display = 'block'
+      } else {
+        el.style.display = 'none'
+      }
+    }
+
+    document.getElementById('pCosto').addEventListener('input', actualizarGanancia)
+    document.getElementById('pPrecio').addEventListener('input', actualizarGanancia)
+
+    let busqTimer
+    document.getElementById('buscador').addEventListener('input', e => {
+      clearTimeout(busqTimer)
+      busqTimer = setTimeout(() => cargarProductos(e.target.value), 350)
+    })
+
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        filtroActual = btn.dataset.filtro
+        renderProductos()
+      })
+    })
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.add('hidden')
+      })
+    })
+
+    function mostrarErr(msg) {
+      const el = document.getElementById('errProducto')
+      el.textContent = msg
+      el.style.display = 'block'
+    }
+
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast')
+      t.textContent = msg
+      t.classList.add('show')
+      setTimeout(() => t.classList.remove('show'), 2500)
+    }
+
+    init()
+  </script>
+
+</body>
+</html>
