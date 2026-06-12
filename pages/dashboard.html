@@ -9,32 +9,53 @@
   <style>
     .greeting  { font-size: 12px; color: rgba(255,255,255,0.45); }
     .header-title { font-size: 17px; color: var(--white); font-weight: 600; }
+
     .periodo-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
-    .periodo-btn { flex: 1; padding: 7px 4px; border-radius: var(--radius-full); font-size: 12px; font-weight: 600; text-align: center; border: 1.5px solid var(--gray-200); background: var(--white); color: var(--gray-600); cursor: pointer; }
+    .periodo-btn {
+      flex: 1; padding: 7px 4px; border-radius: var(--radius-full);
+      font-size: 12px; font-weight: 600; text-align: center;
+      border: 1.5px solid var(--gray-200); background: var(--white);
+      color: var(--gray-600); cursor: pointer;
+    }
     .periodo-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
-    .ganancia-banner { background: linear-gradient(135deg, #4F46E5, #7C3AED); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; color: var(--white); display: flex; justify-content: space-between; align-items: center; }
+
+    .ganancia-banner {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      border-radius: var(--radius-lg); padding: 16px;
+      margin-bottom: 16px; color: var(--white);
+      display: flex; justify-content: space-between; align-items: center;
+    }
     .gb-label { font-size: 12px; opacity: 0.75; margin-bottom: 4px; }
     .gb-valor { font-size: 28px; font-weight: 800; }
     .gb-right { text-align: right; }
     .gb-margen-label { font-size: 11px; opacity: 0.7; margin-bottom: 2px; }
     .gb-margen { font-size: 18px; font-weight: 700; }
+
     .venta-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--gray-100); }
     .venta-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .venta-nombre { font-size: 14px; font-weight: 500; color: var(--gray-800); }
     .venta-sub { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
     .venta-monto { font-size: 14px; font-weight: 700; color: var(--primary); margin-left: auto; flex-shrink: 0; }
+
     .top-prod-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-100); }
     .top-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .top-nombre { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-800); }
     .top-datos { text-align: right; }
     .top-monto { font-size: 13px; font-weight: 700; color: var(--primary); }
     .top-unids { font-size: 11px; color: var(--gray-400); }
-    .reporte-btn { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 8px; cursor: pointer; }
+
+    .reporte-btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px; background: var(--white);
+      border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+      margin-bottom: 8px; cursor: pointer;
+    }
     .reporte-btn:active { background: var(--gray-50); }
     .reporte-ico { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .reporte-texto { flex: 1; }
     .reporte-titulo { font-size: 14px; font-weight: 600; color: var(--gray-800); }
     .reporte-sub { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
+
     .modal-title { font-size: 17px; font-weight: 700; color: var(--gray-900); margin-bottom: 16px; }
     .rep-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
     .rep-label { color: var(--gray-600); }
@@ -57,12 +78,15 @@
   </header>
 
   <main class="page-content">
+
+    <!-- Selector de período -->
     <div class="periodo-tabs">
       <button class="periodo-btn active" data-periodo="hoy">Hoy</button>
       <button class="periodo-btn" data-periodo="semana">Semana</button>
       <button class="periodo-btn" data-periodo="mes">Mes</button>
     </div>
 
+    <!-- Banner ganancia -->
     <div class="ganancia-banner">
       <div>
         <div class="gb-label">Ganancia del período</div>
@@ -74,42 +98,81 @@
       </div>
     </div>
 
+    <!-- Métricas -->
     <div class="metrics-grid">
-      <div class="metric-card"><div class="metric-label">Ingresos</div><div class="metric-value green" id="totalVentas">—</div></div>
-      <div class="metric-card"><div class="metric-label">Órdenes</div><div class="metric-value purple" id="numOrdenes">—</div></div>
-      <div class="metric-card"><div class="metric-label">Ticket prom.</div><div class="metric-value" id="ticketProm">—</div></div>
-      <div class="metric-card"><div class="metric-label">Cotizaciones</div><div class="metric-value" id="numCotizaciones">—</div></div>
+      <div class="metric-card" onclick="abrirDesglosePagos()" style="cursor:pointer;border-color:var(--primary);">
+        <div class="metric-label" style="display:flex;justify-content:space-between;">Ingresos <i class="ti ti-chevron-right" style="font-size:13px;color:var(--gray-400);" aria-hidden="true"></i></div>
+        <div class="metric-value green" id="totalVentas">—</div>
+        <div style="font-size:10px;color:var(--gray-400);margin-top:3px;">Toca para ver desglose</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Órdenes</div>
+        <div class="metric-value purple" id="numOrdenes">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Ticket prom.</div>
+        <div class="metric-value" id="ticketProm">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Cotizaciones</div>
+        <div class="metric-value" id="numCotizaciones">—</div>
+      </div>
     </div>
 
+    <!-- Productos más vendidos -->
     <div class="section-title">Más vendidos</div>
-    <div class="card" id="topProductos"><div style="text-align:center;padding:16px;"><div class="spinner"></div></div></div>
+    <div class="card" id="topProductos">
+      <div style="text-align:center;padding:16px;"><div class="spinner"></div></div>
+    </div>
 
-    <div class="section-title">Últimas ventas</div>
-    <div id="listaVentas"><div style="text-align:center;padding:24px;"><div class="spinner"></div></div></div>
+    <!-- Últimas ventas -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;">
+      <span class="section-title" style="margin:0;">Últimas ventas</span>
+      <a href="historial.html" style="font-size:12px;color:var(--primary);font-weight:600;text-decoration:none;">Ver todo →</a>
+    </div>
+    <div id="listaVentas">
+      <div style="text-align:center;padding:24px;"><div class="spinner"></div></div>
+    </div>
 
+    <!-- Reportes -->
     <div class="section-title">Reportes</div>
     <div class="reporte-btn" onclick="abrirReporte('inventario')">
-      <div class="reporte-ico" style="background:var(--primary-light);color:var(--primary);"><i class="ti ti-package" aria-hidden="true"></i></div>
-      <div class="reporte-texto"><div class="reporte-titulo">Valor del inventario</div><div class="reporte-sub">Costo total y precio de venta en stock</div></div>
+      <div class="reporte-ico" style="background:var(--primary-light);color:var(--primary);">
+        <i class="ti ti-package" aria-hidden="true"></i>
+      </div>
+      <div class="reporte-texto">
+        <div class="reporte-titulo">Valor del inventario</div>
+        <div class="reporte-sub">Costo total y precio de venta en stock</div>
+      </div>
       <i class="ti ti-chevron-right" style="color:var(--gray-400);" aria-hidden="true"></i>
     </div>
     <div class="reporte-btn" onclick="abrirReporte('ganancias')">
-      <div class="reporte-ico" style="background:var(--success-light);color:var(--success);"><i class="ti ti-trending-up" aria-hidden="true"></i></div>
-      <div class="reporte-texto"><div class="reporte-titulo">Reporte de ganancias</div><div class="reporte-sub">Ingresos, costos y márgenes del período</div></div>
+      <div class="reporte-ico" style="background:var(--success-light);color:var(--success);">
+        <i class="ti ti-trending-up" aria-hidden="true"></i>
+      </div>
+      <div class="reporte-texto">
+        <div class="reporte-titulo">Reporte de ganancias</div>
+        <div class="reporte-sub">Ingresos, costos y márgenes del período</div>
+      </div>
       <i class="ti ti-chevron-right" style="color:var(--gray-400);" aria-hidden="true"></i>
     </div>
 
+    <!-- Stock bajo -->
     <div class="section-title">Stock bajo</div>
-    <div id="stockBajo"><div style="text-align:center;padding:24px;"><div class="spinner"></div></div></div>
+    <div id="stockBajo">
+      <div style="text-align:center;padding:24px;"><div class="spinner"></div></div>
+    </div>
+
   </main>
 
   <nav class="bottom-nav">
     <a href="dashboard.html" class="nav-item active"><i class="ti ti-home" aria-hidden="true"></i>Inicio</a>
-    <a href="ventas.html" class="nav-item"><i class="ti ti-shopping-cart" aria-hidden="true"></i>Venta</a>
+    <a href="ventas.html"    class="nav-item"><i class="ti ti-shopping-cart" aria-hidden="true"></i>Venta</a>
     <a href="inventario.html" class="nav-item"><i class="ti ti-package" aria-hidden="true"></i>Inventario</a>
     <a href="cotizaciones.html" class="nav-item"><i class="ti ti-file-text" aria-hidden="true"></i>Cotizar</a>
   </nav>
 
+  <!-- MODAL: Reporte inventario -->
   <div class="modal-overlay hidden" id="modalInventario">
     <div class="modal">
       <div class="modal-handle"></div>
@@ -119,12 +182,23 @@
     </div>
   </div>
 
+  <!-- MODAL: Reporte ganancias -->
   <div class="modal-overlay hidden" id="modalGanancias">
     <div class="modal">
       <div class="modal-handle"></div>
       <div class="modal-title" id="repGananciasTitulo">Reporte de ganancias</div>
       <div id="repGananciasContenido"></div>
       <button class="btn btn-secondary mt-12" onclick="cerrarModal('modalGanancias')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Desglose de pagos -->
+  <div class="modal-overlay hidden" id="modalPagos">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modalPagosTitulo">Desglose de ingresos</div>
+      <div id="modalPagosContenido"></div>
+      <button class="btn btn-secondary mt-12" onclick="cerrarModal('modalPagos')">Cerrar</button>
     </div>
   </div>
 
@@ -137,43 +211,60 @@
     let periodoActual = 'hoy'
     let datosVentas   = []
 
-    window.handleLogout = async () => { if (confirm('¿Cerrar sesión?')) await logout() }
+    window.handleLogout = async () => {
+      if (confirm('¿Cerrar sesión?')) await logout()
+    }
 
     function getRango(periodo) {
-      const desde = new Date(); desde.setHours(0,0,0,0)
+      const desde = new Date()
+      desde.setHours(0, 0, 0, 0)
       if (periodo === 'semana') desde.setDate(desde.getDate() - desde.getDay())
       if (periodo === 'mes')    desde.setDate(1)
-      const hasta = new Date(); hasta.setHours(23,59,59,999)
+      const hasta = new Date()
+      hasta.setHours(23, 59, 59, 999)
       return { desde, hasta }
     }
 
     async function init() {
-      const session = await requireAuth(); if (!session) return
+      const session = await requireAuth()
+      if (!session) return
+
+      // Fecha en header
+      const hoy = new Date()
       document.getElementById('greetingFecha').textContent =
-        new Date().toLocaleDateString('es-PE', { weekday:'long', day:'numeric', month:'long' })
+        hoy.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' })
+
       await cargarDatos()
     }
 
     async function cargarDatos() {
       const { desde, hasta } = getRango(periodoActual)
+
       const [ventasRes, cotRes, stockRes] = await Promise.all([
         supabase.from('ventas')
-          .select('id,total,cliente,creado_en,detalle_ventas(producto_id,nombre_producto,costo_unitario,precio_unitario,cantidad,subtotal)')
-          .gte('creado_en', desde.toISOString()).lte('creado_en', hasta.toISOString())
+          .select('id, total, cliente, creado_en, detalle_ventas(producto_id, nombre_producto, costo_unitario, precio_unitario, cantidad, subtotal)')
+          .gte('creado_en', desde.toISOString())
+          .lte('creado_en', hasta.toISOString())
           .order('creado_en', { ascending: false }),
-        supabase.from('cotizaciones').select('id', { count:'exact' })
-          .gte('creado_en', desde.toISOString()).lte('creado_en', hasta.toISOString()),
-        supabase.from('productos').select('nombre,stock,stock_min,costo,precio').eq('activo', true)
+        supabase.from('cotizaciones')
+          .select('id', { count: 'exact' })
+          .gte('creado_en', desde.toISOString())
+          .lte('creado_en', hasta.toISOString()),
+        supabase.from('productos')
+          .select('nombre, stock, stock_min, costo, precio')
+          .eq('activo', true)
       ])
 
       datosVentas = ventasRes.data || []
       const productos = stockRes.data || []
 
-      const totalVentas  = datosVentas.reduce((s,v) => s + Number(v.total), 0)
-      const totalCosto   = datosVentas.reduce((s,v) => s + (v.detalle_ventas||[]).reduce((sc,d) => sc + Number(d.costo_unitario)*d.cantidad, 0), 0)
-      const ganancia     = totalVentas - totalCosto
-      const margen       = totalVentas > 0 ? ((ganancia/totalVentas)*100).toFixed(1) : '0.0'
-      const ticketProm   = datosVentas.length > 0 ? totalVentas/datosVentas.length : 0
+      // ── Métricas ──
+      const totalVentas   = datosVentas.reduce((s, v) => s + Number(v.total), 0)
+      const totalCosto    = datosVentas.reduce((s, v) =>
+        s + (v.detalle_ventas || []).reduce((sc, d) => sc + Number(d.costo_unitario) * d.cantidad, 0), 0)
+      const ganancia      = totalVentas - totalCosto
+      const margen        = totalVentas > 0 ? ((ganancia / totalVentas) * 100).toFixed(1) : '0.0'
+      const ticketProm    = datosVentas.length > 0 ? totalVentas / datosVentas.length : 0
 
       document.getElementById('bannerGanancia').textContent  = `S/ ${ganancia.toFixed(2)}`
       document.getElementById('bannerMargen').textContent    = `${margen}%`
@@ -182,105 +273,202 @@
       document.getElementById('ticketProm').textContent      = `S/ ${ticketProm.toFixed(2)}`
       document.getElementById('numCotizaciones').textContent = cotRes.count ?? 0
 
+      // ── Top productos ──
       const conteo = {}
       datosVentas.forEach(v => {
-        (v.detalle_ventas||[]).forEach(d => {
-          if (!conteo[d.nombre_producto]) conteo[d.nombre_producto] = { cantidad:0, monto:0 }
+        (v.detalle_ventas || []).forEach(d => {
+          if (!conteo[d.nombre_producto]) conteo[d.nombre_producto] = { cantidad: 0, monto: 0 }
           conteo[d.nombre_producto].cantidad += d.cantidad
           conteo[d.nombre_producto].monto    += Number(d.subtotal)
         })
       })
-      const top = Object.entries(conteo).sort((a,b) => b[1].monto - a[1].monto).slice(0,5)
+      const top = Object.entries(conteo)
+        .sort((a, b) => b[1].monto - a[1].monto)
+        .slice(0, 5)
+
       const topEl = document.getElementById('topProductos')
-      topEl.innerHTML = top.length === 0
-        ? `<div class="text-muted" style="padding:12px;text-align:center;">Sin ventas en este período</div>`
-        : top.map(([nombre,datos],i) => `
-            <div class="top-prod-row">
-              <div class="top-num">${i+1}</div>
-              <div class="top-nombre">${nombre}</div>
-              <div class="top-datos">
-                <div class="top-monto">S/ ${datos.monto.toFixed(2)}</div>
-                <div class="top-unids">${datos.cantidad} unid.</div>
-              </div>
-            </div>`).join('')
-
-      const listaEl = document.getElementById('listaVentas')
-      listaEl.innerHTML = datosVentas.length === 0
-        ? `<div class="empty-state"><i class="ti ti-receipt"></i><p>Sin ventas en este período</p></div>`
-        : datosVentas.slice(0,6).map(v => {
-            const hora  = new Date(v.creado_en).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
-            const fecha = new Date(v.creado_en).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'})
-            return `<div class="venta-row">
-              <div class="venta-icon"><i class="ti ti-receipt" aria-hidden="true"></i></div>
-              <div><div class="venta-nombre">${v.cliente||'Cliente general'}</div><div class="venta-sub">${fecha} ${hora}</div></div>
-              <div class="venta-monto">S/ ${Number(v.total).toFixed(2)}</div>
-            </div>`
-          }).join('')
-
-      const bajos = productos.filter(p => p.stock <= p.stock_min)
-      document.getElementById('stockBajo').innerHTML = bajos.length === 0
-        ? `<div class="card-flat" style="color:var(--success);font-size:13px;display:flex;align-items:center;gap:8px;"><i class="ti ti-circle-check" style="font-size:18px;" aria-hidden="true"></i> Todo el stock está bien</div>`
-        : bajos.map(p => `<div class="card-flat row-between" style="margin-bottom:6px;">
-            <span style="font-size:14px;font-weight:500;">${p.nombre}</span>
-            <span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock} unid.</span>
+      if (top.length === 0) {
+        topEl.innerHTML = `<div class="text-muted text-center" style="padding:12px;">Sin ventas en este período</div>`
+      } else {
+        topEl.innerHTML = top.map(([nombre, datos], i) => `
+          <div class="top-prod-row">
+            <div class="top-num">${i + 1}</div>
+            <div class="top-nombre">${nombre}</div>
+            <div class="top-datos">
+              <div class="top-monto">S/ ${datos.monto.toFixed(2)}</div>
+              <div class="top-unids">${datos.cantidad} unid.</div>
+            </div>
           </div>`).join('')
+      }
 
+      // guardar ventas para desglose
+      window._datosVentas = datosVentas
+
+      // ── Últimas ventas ──
+      const listaEl = document.getElementById('listaVentas')
+      if (datosVentas.length === 0) {
+        listaEl.innerHTML = `<div class="empty-state"><i class="ti ti-receipt"></i><p>Sin ventas en este período</p></div>`
+      } else {
+        listaEl.innerHTML = datosVentas.slice(0, 6).map(v => {
+          const hora  = new Date(v.creado_en).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })
+          const fecha = new Date(v.creado_en).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit' })
+          const pago  = v.tipo_pago || 'efectivo'
+          const pagoLabel = pago === 'yape' ? '📱' : '💵'
+          const numero = String(v.numero).padStart(4, '0')
+          return `
+            <div class="venta-row" onclick="window.location.href='historial.html'" style="cursor:pointer;">
+              <div class="venta-icon"><i class="ti ti-receipt" aria-hidden="true"></i></div>
+              <div style="flex:1;">
+                <div class="venta-nombre">${v.cliente || 'Cliente general'}</div>
+                <div class="venta-sub">${fecha} ${hora} · #${numero}</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="venta-monto">S/ ${Number(v.total).toFixed(2)}</div>
+                <div style="font-size:11px;color:var(--gray-400);">${pagoLabel} ${pago}</div>
+              </div>
+            </div>`
+        }).join('')
+      }
+
+      // ── Stock bajo ──
+      const stockEl = document.getElementById('stockBajo')
+      const bajos   = productos.filter(p => p.stock <= p.stock_min)
+      if (bajos.length === 0) {
+        stockEl.innerHTML = `<div class="card-flat" style="color:var(--success);font-size:13px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-circle-check" style="font-size:18px;" aria-hidden="true"></i> Todo el stock está bien
+        </div>`
+      } else {
+        stockEl.innerHTML = bajos.map(p => `
+          <div class="card-flat row-between" style="margin-bottom:6px;">
+            <span style="font-size:14px;font-weight:500;">${p.nombre}</span>
+            <span class="badge ${p.stock === 0 ? 'badge-red' : 'badge-amber'}">${p.stock} unid.</span>
+          </div>`).join('')
+      }
+
+      // guardar para reportes
       window._stockData = productos
     }
 
+    // ── Reportes ──
+
     window.abrirReporte = function(tipo) {
       if (tipo === 'inventario') {
-        const prods = window._stockData || []
-        const tCosto = prods.reduce((s,p) => s + Number(p.costo)*p.stock, 0)
-        const tVenta = prods.reduce((s,p) => s + Number(p.precio)*p.stock, 0)
+        const productos = window._stockData || []
+        const totalCosto  = productos.reduce((s, p) => s + Number(p.costo)  * p.stock, 0)
+        const totalVenta  = productos.reduce((s, p) => s + Number(p.precio) * p.stock, 0)
+        const gananciaP   = totalVenta - totalCosto
+
         document.getElementById('repInventarioContenido').innerHTML = `
-          <div class="rep-row"><span class="rep-label">Total productos</span><span class="rep-valor">${prods.length}</span></div>
-          <div class="rep-row"><span class="rep-label">Costo total en stock</span><span class="rep-valor">S/ ${tCosto.toFixed(2)}</span></div>
-          <div class="rep-row"><span class="rep-label">Precio venta total</span><span class="rep-valor purple">S/ ${tVenta.toFixed(2)}</span></div>
-          <div class="rep-row"><span class="rep-label">Ganancia potencial</span><span class="rep-valor green">S/ ${(tVenta-tCosto).toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Total productos</span><span class="rep-valor">${productos.length}</span></div>
+          <div class="rep-row"><span class="rep-label">Costo total en stock</span><span class="rep-valor">S/ ${totalCosto.toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Precio venta total</span><span class="rep-valor purple">S/ ${totalVenta.toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Ganancia potencial</span><span class="rep-valor green">S/ ${gananciaP.toFixed(2)}</span></div>
           <div class="divider"></div>
           <div class="section-title" style="margin-top:8px;">Por producto</div>
-          ${prods.map(p => `<div class="rep-row">
-            <span class="rep-label">${p.nombre}<br><span style="font-size:11px;color:var(--gray-400);">${p.stock} unid.</span></span>
-            <span class="rep-valor green">+S/ ${((Number(p.precio)-Number(p.costo))*p.stock).toFixed(2)}</span>
-          </div>`).join('')}`
+          ${productos.map(p => {
+            const ganP = (Number(p.precio) - Number(p.costo)) * p.stock
+            return `<div class="rep-row">
+              <span class="rep-label">${p.nombre}<br><span style="font-size:11px;color:var(--gray-400);">${p.stock} unid.</span></span>
+              <span class="rep-valor green">+S/ ${ganP.toFixed(2)}</span>
+            </div>`
+          }).join('')}`
+
         document.getElementById('modalInventario').classList.remove('hidden')
       }
 
       if (tipo === 'ganancias') {
-        const label    = periodoActual==='hoy'?'Hoy':periodoActual==='semana'?'Esta semana':'Este mes'
-        const ingresos = datosVentas.reduce((s,v) => s+Number(v.total), 0)
-        const costo    = datosVentas.reduce((s,v) => s+(v.detalle_ventas||[]).reduce((sc,d) => sc+Number(d.costo_unitario)*d.cantidad, 0), 0)
-        const gan      = ingresos - costo
-        const margen   = ingresos > 0 ? ((gan/ingresos)*100).toFixed(1) : '0.0'
-        const ticket   = datosVentas.length > 0 ? ingresos/datosVentas.length : 0
-        document.getElementById('repGananciasTitulo').textContent = `Ganancias — ${label}`
+        const { desde, hasta } = getRango(periodoActual)
+        const labelPeriodo = periodoActual === 'hoy' ? 'Hoy' : periodoActual === 'semana' ? 'Esta semana' : 'Este mes'
+        const totalIngresos = datosVentas.reduce((s, v) => s + Number(v.total), 0)
+        const totalCosto    = datosVentas.reduce((s, v) =>
+          s + (v.detalle_ventas || []).reduce((sc, d) => sc + Number(d.costo_unitario) * d.cantidad, 0), 0)
+        const ganancia      = totalIngresos - totalCosto
+        const margen        = totalIngresos > 0 ? ((ganancia / totalIngresos) * 100).toFixed(1) : '0.0'
+        const ticketProm    = datosVentas.length > 0 ? totalIngresos / datosVentas.length : 0
+
+        document.getElementById('repGananciasTitulo').textContent = `Ganancias — ${labelPeriodo}`
         document.getElementById('repGananciasContenido').innerHTML = `
-          <div class="rep-row"><span class="rep-label">Período</span><span class="rep-valor">${label}</span></div>
+          <div class="rep-row"><span class="rep-label">Período</span><span class="rep-valor">${labelPeriodo}</span></div>
           <div class="rep-row"><span class="rep-label">Ventas realizadas</span><span class="rep-valor">${datosVentas.length}</span></div>
-          <div class="rep-row"><span class="rep-label">Ingresos totales</span><span class="rep-valor purple">S/ ${ingresos.toFixed(2)}</span></div>
-          <div class="rep-row"><span class="rep-label">Costo de lo vendido</span><span class="rep-valor">S/ ${costo.toFixed(2)}</span></div>
-          <div class="rep-row"><span class="rep-label">Ticket promedio</span><span class="rep-valor">S/ ${ticket.toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Ingresos totales</span><span class="rep-valor purple">S/ ${totalIngresos.toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Costo de lo vendido</span><span class="rep-valor">S/ ${totalCosto.toFixed(2)}</span></div>
+          <div class="rep-row"><span class="rep-label">Ticket promedio</span><span class="rep-valor">S/ ${ticketProm.toFixed(2)}</span></div>
           <div class="divider"></div>
-          <div class="rep-total"><span>Ganancia neta</span><span style="color:var(--success);">S/ ${gan.toFixed(2)}</span></div>
-          <div style="text-align:center;background:var(--success-light);color:#065f46;border-radius:var(--radius-sm);padding:10px;font-size:13px;font-weight:600;margin-top:10px;">Margen: ${margen}%</div>`
+          <div class="rep-total">
+            <span>Ganancia neta</span>
+            <span style="color:var(--success);">S/ ${ganancia.toFixed(2)}</span>
+          </div>
+          <div style="text-align:center;background:var(--success-light);color:#065f46;border-radius:var(--radius-sm);padding:10px;font-size:13px;font-weight:600;margin-top:10px;">
+            Margen de ganancia: ${margen}%
+          </div>`
+
         document.getElementById('modalGanancias').classList.remove('hidden')
       }
     }
 
-    window.cerrarModal = id => document.getElementById(id).classList.add('hidden')
+    window.cerrarModal = function(id) { document.getElementById(id).classList.add('hidden') }
 
+    window.abrirDesglosePagos = function() {
+      const ventas     = window._datosVentas || []
+      const label      = periodoActual === 'hoy' ? 'Hoy' : periodoActual === 'semana' ? 'Esta semana' : 'Este mes'
+      const efectivo   = ventas.filter(v => (v.tipo_pago || 'efectivo') === 'efectivo')
+      const yape       = ventas.filter(v => v.tipo_pago === 'yape')
+      const totEfectivo = efectivo.reduce((s, v) => s + Number(v.total), 0)
+      const totYape     = yape.reduce((s, v) => s + Number(v.total), 0)
+      const totGeneral  = totEfectivo + totYape
+      const pctEfectivo = totGeneral > 0 ? ((totEfectivo / totGeneral) * 100).toFixed(0) : 0
+      const pctYape     = totGeneral > 0 ? ((totYape / totGeneral) * 100).toFixed(0) : 0
+
+      document.getElementById('modalPagosTitulo').textContent = `Ingresos — ${label}`
+      document.getElementById('modalPagosContenido').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+          <div style="background:#d1fae5;border-radius:var(--radius-md);padding:14px;text-align:center;">
+            <div style="font-size:22px;margin-bottom:4px;">💵</div>
+            <div style="font-size:11px;color:#065f46;font-weight:600;margin-bottom:4px;">EFECTIVO</div>
+            <div style="font-size:20px;font-weight:800;color:#065f46;">S/ ${totEfectivo.toFixed(2)}</div>
+            <div style="font-size:11px;color:#059669;margin-top:2px;">${efectivo.length} ventas · ${pctEfectivo}%</div>
+          </div>
+          <div style="background:#EDE9FE;border-radius:var(--radius-md);padding:14px;text-align:center;">
+            <div style="font-size:22px;margin-bottom:4px;">📱</div>
+            <div style="font-size:11px;color:#5B21B6;font-weight:600;margin-bottom:4px;">YAPE</div>
+            <div style="font-size:20px;font-weight:800;color:#5B21B6;">S/ ${totYape.toFixed(2)}</div>
+            <div style="font-size:11px;color:#7C3AED;margin-top:2px;">${yape.length} ventas · ${pctYape}%</div>
+          </div>
+        </div>
+        <div style="background:var(--gray-100);border-radius:var(--radius-md);padding:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:14px;font-weight:600;color:var(--gray-700);">Total ingresos</span>
+          <span style="font-size:18px;font-weight:800;color:var(--primary);">S/ ${totGeneral.toFixed(2)}</span>
+        </div>
+        <div style="margin-top:12px;">
+          <div style="height:8px;border-radius:var(--radius-full);background:var(--gray-200);overflow:hidden;display:flex;">
+            <div style="width:${pctEfectivo}%;background:#059669;transition:width .3s;"></div>
+            <div style="width:${pctYape}%;background:#7C3AED;transition:width .3s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--gray-500);">
+            <span>💵 Efectivo ${pctEfectivo}%</span>
+            <span>📱 Yape ${pctYape}%</span>
+          </div>
+        </div>`
+
+      document.getElementById('modalPagos').classList.remove('hidden')
+    }
+
+    // ── Tabs de período ──
     document.querySelectorAll('.periodo-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.periodo-btn').forEach(b => b.classList.remove('active'))
-        btn.classList.add('active'); periodoActual = btn.dataset.periodo; cargarDatos()
+        btn.classList.add('active')
+        periodoActual = btn.dataset.periodo
+        cargarDatos()
       })
     })
+
     document.querySelectorAll('.modal-overlay').forEach(o => {
-      o.addEventListener('click', e => { if (e.target===o) o.classList.add('hidden') })
+      o.addEventListener('click', e => { if (e.target === o) o.classList.add('hidden') })
     })
 
     init()
   </script>
+
 </body>
 </html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Historial de Ventas — Tienda Útiles</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    .filtros{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+    .filtro-btn{flex-shrink:0;padding:6px 14px;border-radius:var(--radius-full);font-size:12px;font-weight:600;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);cursor:pointer;}
+    .filtro-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary);}
+    .venta-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:14px;margin-bottom:8px;cursor:pointer;}
+    .venta-card:active{background:var(--gray-50);}
+    .vc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .vc-num{font-size:12px;color:var(--gray-400);font-weight:500;}
+    .vc-cliente{font-size:15px;font-weight:600;color:var(--gray-900);}
+    .vc-total{font-size:16px;font-weight:700;color:var(--primary);}
+    .vc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+    .vc-items{font-size:12px;color:var(--gray-500);}
+    .vc-fecha{font-size:11px;color:var(--gray-400);}
+    .pago-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--radius-full);font-size:11px;font-weight:600;}
+    .pago-chip.efectivo{background:#d1fae5;color:#065f46;}
+    .pago-chip.yape{background:#EDE9FE;color:#5B21B6;}
+    .det-header{background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:var(--radius-md);padding:16px;margin-bottom:16px;color:#fff;}
+    .det-num{font-size:12px;opacity:0.7;margin-bottom:2px;}
+    .det-cliente{font-size:18px;font-weight:700;margin-bottom:4px;}
+    .det-fecha{font-size:12px;opacity:0.7;}
+    .det-item-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100);}
+    .det-item-ico{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .det-item-nombre{flex:1;font-size:14px;font-weight:500;color:var(--gray-800);}
+    .det-item-det{font-size:12px;color:var(--gray-400);margin-top:1px;}
+    .det-item-sub{font-size:14px;font-weight:700;color:var(--primary);}
+    .det-total-final{display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding-top:10px;}
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <button class="icon-btn" onclick="window.location.href='dashboard.html'" aria-label="Volver">
+      <i class="ti ti-arrow-left" aria-hidden="true"></i>
+    </button>
+    <div class="title">Historial de ventas</div>
+    <div style="width:36px;"></div>
+  </header>
+
+  <main class="page-content" style="padding-top:16px;">
+    <div class="search-bar">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" id="buscador" placeholder="Buscar cliente...">
+    </div>
+    <div class="filtros">
+      <button class="filtro-btn active" data-filtro="todos">Todos</button>
+      <button class="filtro-btn" data-filtro="efectivo">💵 Efectivo</button>
+      <button class="filtro-btn" data-filtro="yape">📱 Yape</button>
+    </div>
+    <div id="listaVentas">
+      <div style="text-align:center;padding:40px;"><div class="spinner"></div></div>
+    </div>
+  </main>
+
+  <div class="modal-overlay hidden" id="modalDetalle">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div id="detalleContenido"></div>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalDetalle')">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { requireAuth } from '../js/auth.js'
+    import { getVentas } from '../js/ventas.js'
+
+    let ventas=[], filtro='todos', busqueda=''
+
+    async function init() {
+      await requireAuth()
+      try { ventas = await getVentas(100); render() }
+      catch(e) { mostrarToast('Error al cargar ventas') }
+    }
+
+    function render() {
+      const el = document.getElementById('listaVentas')
+      let lista = ventas
+      if (filtro !== 'todos') lista = lista.filter(v => (v.tipo_pago||'efectivo') === filtro)
+      if (busqueda) lista = lista.filter(v => (v.cliente||'').toLowerCase().includes(busqueda.toLowerCase()))
+      if (!lista.length) { el.innerHTML=`<div class="empty-state"><i class="ti ti-receipt-off"></i><p>No hay ventas aquí</p></div>`; return }
+      el.innerHTML = lista.map(v => {
+        const fecha  = new Date(v.creado_en).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+        const numero = String(v.numero).padStart(4,'0')
+        const items  = v.detalle_ventas||[]
+        const preview = items.slice(0,3).map(i=>`${i.nombre_producto} ×${i.cantidad}`).join(', ')
+        const pago   = v.tipo_pago||'efectivo'
+        return `<div class="venta-card" onclick="verDetalle('${v.id}')">
+          <div class="vc-top">
+            <div><div class="vc-num">Boleta #${numero}</div><div class="vc-cliente">${v.cliente||'Cliente general'}</div></div>
+            <div style="text-align:right;">
+              <div class="vc-total">S/ ${Number(v.total).toFixed(2)}</div>
+              <span class="pago-chip ${pago}">${pago==='yape'?'📱 Yape':'💵 Efectivo'}</span>
+            </div>
+          </div>
+          <div class="vc-footer">
+            <span class="vc-items">${preview}${items.length>3?` y ${items.length-3} más`:''}</span>
+            <span class="vc-fecha">${fecha}</span>
+          </div>
+        </div>`
+      }).join('')
+    }
+
+    window.verDetalle = function(id) {
+      const v = ventas.find(x=>x.id===id); if(!v) return
+      const numero = String(v.numero).padStart(4,'0')
+      const fecha  = new Date(v.creado_en).toLocaleString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      const items  = v.detalle_ventas||[]
+      const pago   = v.tipo_pago||'efectivo'
+      const subtotal = items.reduce((s,i)=>s+Number(i.subtotal),0)
+      const itemsHTML = items.map(i=>`
+        <div class="det-item-row">
+          <div class="det-item-ico"><i class="ti ti-package" aria-hidden="true"></i></div>
+          <div style="flex:1;">
+            <div class="det-item-nombre">${i.nombre_producto}</div>
+            <div class="det-item-det">${i.cantidad} × S/ ${Number(i.precio_unitario).toFixed(2)}</div>
+          </div>
+          <div class="det-item-sub">S/ ${Number(i.subtotal).toFixed(2)}</div>
+        </div>`).join('')
+      document.getElementById('detalleContenido').innerHTML = `
+        <div class="det-header">
+          <div class="det-num">Boleta #${numero}</div>
+          <div class="det-cliente">${v.cliente||'Cliente general'}</div>
+          <div class="det-fecha">📅 ${fecha}</div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--gray-400);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Productos</div>
+        ${itemsHTML}
+        <div style="margin-top:12px;">
+          ${Number(v.descuento)>0?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;"><span>Subtotal</span><span>S/ ${subtotal.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;"><span>Descuento</span><span style="color:var(--success);">-S/ ${Number(v.descuento).toFixed(2)}</span></div>`:''}
+          <div class="det-total-final"><span>TOTAL</span><span style="color:var(--primary);">S/ ${Number(v.total).toFixed(2)}</span></div>
+          <div style="margin-top:10px;text-align:center;"><span class="pago-chip ${pago}" style="font-size:13px;padding:5px 14px;">${pago==='yape'?'📱 Yape':'💵 Efectivo'}</span></div>
+          ${v.telefono?`<div style="text-align:center;margin-top:8px;font-size:12px;color:var(--gray-400);">WhatsApp: ${v.telefono}</div>`:''}
+        </div>`
+      document.getElementById('modalDetalle').classList.remove('hidden')
+    }
+
+    window.cerrarModal = id => document.getElementById(id).classList.add('hidden')
+
+    document.querySelectorAll('.filtro-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'))
+        btn.classList.add('active'); filtro=btn.dataset.filtro; render()
+      })
+    })
+
+    let busqTimer
+    document.getElementById('buscador').addEventListener('input',e=>{
+      clearTimeout(busqTimer); busqTimer=setTimeout(()=>{busqueda=e.target.value;render()},300)
+    })
+
+    document.querySelectorAll('.modal-overlay').forEach(o=>{
+      o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden')})
+    })
+
+    function mostrarToast(msg){
+      const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show')
+      setTimeout(()=>t.classList.remove('show'),2500)
+    }
+
+    init()
+  </script>
+</body>
+</html>
