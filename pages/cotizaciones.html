@@ -7,54 +7,81 @@
   <link rel="stylesheet" href="../css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <style>
-    .search-sticky { position:sticky;top:var(--header-height);z-index:50;background:var(--gray-50);padding:10px 16px 6px;border-bottom:1px solid var(--gray-200); }
-    .tabs { display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px; }
-    .tab-btn { flex-shrink:0;padding:6px 14px;border-radius:var(--radius-full);font-size:12px;font-weight:600;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);cursor:pointer; }
-    .tab-btn.active { background:var(--primary);color:var(--white);border-color:var(--primary); }
-    .cot-card { background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:14px;margin-bottom:10px; }
-    .cot-header { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px; }
-    .cot-num { font-size:12px;color:var(--gray-400);font-weight:500;margin-bottom:2px; }
-    .cot-cliente { font-size:15px;font-weight:600;color:var(--gray-900); }
-    .cot-items-preview { font-size:12px;color:var(--gray-500);margin:6px 0; }
-    .cot-footer { display:flex;justify-content:space-between;align-items:center;margin-top:10px; }
-    .cot-fecha { font-size:11px;color:var(--gray-400); }
-    .cot-total { font-size:16px;font-weight:700;color:var(--primary); }
-    .cot-acciones { display:flex;gap:6px;margin-top:10px; }
-    .prod-item { display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--gray-100);background:var(--white);cursor:pointer; }
-    .prod-item:active { background:var(--primary-light); }
-    .prod-ico { width:38px;height:38px;border-radius:var(--radius-sm);background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0; }
-    .prod-nombre { flex:1;font-size:14px;font-weight:500;color:var(--gray-900); }
-    .prod-precio { font-size:14px;font-weight:700;color:var(--primary); }
-    .carrito-wrap { background:var(--white);border-top:1px solid var(--gray-200);padding:10px 16px;position:fixed;bottom:var(--nav-height);left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:90;max-height:50vh;display:flex;flex-direction:column; }
-    .carrito-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;cursor:pointer; }
-    .carrito-titulo { font-size:13px;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:6px; }
-    .carrito-badge { background:var(--warning);color:var(--white);border-radius:var(--radius-full);font-size:10px;font-weight:700;padding:1px 7px; }
-    .carrito-items { overflow-y:auto;flex:1; }
-    .carrito-item { display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--gray-100); }
-    .carrito-nombre { flex:1;font-size:13px;font-weight:500;color:var(--gray-800); }
-    .qty-ctrl { display:flex;align-items:center;gap:6px; }
-    .qty-btn { width:26px;height:26px;border-radius:50%;border:1.5px solid var(--gray-200);background:var(--gray-50);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer; }
-    .qty-num { font-size:13px;font-weight:700;min-width:18px;text-align:center; }
-    .item-sub { font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0;min-width:52px;text-align:right; }
-    .carrito-footer { padding-top:8px; }
-    .total-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; }
-    .total-label { font-size:13px;color:var(--gray-600); }
-    .total-valor { font-size:20px;font-weight:800;color:var(--gray-900); }
-    .carrito-vacio { text-align:center;padding:10px;color:var(--gray-400);font-size:13px; }
-    .page-content { padding-bottom:calc(var(--nav-height) + 210px);padding-top:0; }
-    .modal-title { font-size:17px;font-weight:700;color:var(--gray-900);margin-bottom:14px; }
-    .cot-doc { font-family:'Courier New',monospace;font-size:13px;background:var(--white);border:1px dashed var(--gray-300);border-radius:var(--radius-md);padding:16px;margin-bottom:14px; }
-    .cot-doc-titulo { text-align:center;font-size:15px;font-weight:700;margin-bottom:4px; }
-    .cot-doc-sub { text-align:center;font-size:11px;color:var(--gray-500);margin-bottom:10px; }
-    .cot-doc-linea { border:none;border-top:1px dashed var(--gray-300);margin:8px 0; }
-    .cot-doc-row { display:flex;justify-content:space-between;margin:3px 0;font-size:12px; }
-    .cot-doc-total { display:flex;justify-content:space-between;font-weight:700;font-size:14px;margin-top:6px; }
-    .cot-doc-nota { font-size:11px;color:var(--gray-500);margin-top:8px; }
-    .aviso-stock { background:var(--warning-light);color:#92400e;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start; }
+    .search-sticky {
+      position: sticky; top: var(--header-height); z-index: 50;
+      background: var(--gray-50); padding: 10px 16px 6px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+    .tab-btn {
+      flex-shrink: 0; padding: 6px 14px; border-radius: var(--radius-full);
+      font-size: 12px; font-weight: 600;
+      border: 1.5px solid var(--gray-200); background: var(--white);
+      color: var(--gray-600); cursor: pointer;
+    }
+    .tab-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    .cot-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px;
+    }
+    .cot-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .cot-num { font-size: 12px; color: var(--gray-400); font-weight: 500; margin-bottom: 2px; }
+    .cot-cliente { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+    .cot-items-preview { font-size: 12px; color: var(--gray-500); margin: 6px 0; }
+    .cot-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .cot-fecha { font-size: 11px; color: var(--gray-400); }
+    .cot-total { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .cot-acciones { display: flex; gap: 6px; margin-top: 10px; }
+
+    .prod-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-bottom: 1px solid var(--gray-100);
+      background: var(--white); cursor: pointer;
+    }
+    .prod-item:active { background: var(--primary-light); }
+    .prod-ico { width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .prod-nombre { flex: 1; font-size: 14px; font-weight: 500; color: var(--gray-900); }
+    .prod-precio { font-size: 14px; font-weight: 700; color: var(--primary); }
+
+    .carrito-wrap {
+      background: var(--white); border-top: 1px solid var(--gray-200);
+      padding: 10px 16px; position: fixed;
+      bottom: var(--nav-height); left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; z-index: 90;
+      max-height: 50vh; display: flex; flex-direction: column;
+    }
+    .carrito-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; cursor: pointer; }
+    .carrito-titulo { font-size: 13px; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 6px; }
+    .carrito-badge { background: var(--warning); color: var(--white); border-radius: var(--radius-full); font-size: 10px; font-weight: 700; padding: 1px 7px; }
+    .carrito-items { overflow-y: auto; flex: 1; }
+    .carrito-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--gray-100); }
+    .carrito-nombre { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-800); }
+    .qty-ctrl { display: flex; align-items: center; gap: 6px; }
+    .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--gray-200); background: var(--gray-50); font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .qty-num { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; }
+    .item-sub { font-size: 13px; font-weight: 700; color: var(--primary); flex-shrink: 0; min-width: 52px; text-align: right; }
+    .carrito-footer { padding-top: 8px; }
+    .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .total-label { font-size: 13px; color: var(--gray-600); }
+    .total-valor { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+    .carrito-vacio { text-align: center; padding: 10px; color: var(--gray-400); font-size: 13px; }
+    .page-content { padding-bottom: calc(var(--nav-height) + 210px); padding-top: 0; }
+
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--gray-900); margin-bottom: 14px; }
+    .cot-doc { font-family: 'Courier New', monospace; font-size: 13px; background: var(--white); border: 1px dashed var(--gray-300); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px; }
+    .cot-doc-titulo { text-align: center; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .cot-doc-sub { text-align: center; font-size: 11px; color: var(--gray-500); margin-bottom: 10px; }
+    .cot-doc-linea { border: none; border-top: 1px dashed var(--gray-300); margin: 8px 0; }
+    .cot-doc-row { display: flex; justify-content: space-between; margin: 3px 0; font-size: 12px; }
+    .cot-doc-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-top: 6px; }
+    .cot-doc-nota { font-size: 11px; color: var(--gray-500); margin-top: 8px; }
+    .aviso-stock { background: var(--warning-light); color: #92400e; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; gap: 8px; align-items: flex-start; }
   </style>
 </head>
 <body>
 
+  <!-- VISTA LISTA -->
   <div id="vistaLista">
     <header class="app-header">
       <div class="title">Cotizaciones</div>
@@ -75,6 +102,7 @@
     </main>
   </div>
 
+  <!-- VISTA NUEVA COTIZACIÓN -->
   <div id="vistaNueva" style="display:none;">
     <header class="app-header">
       <button class="icon-btn" onclick="mostrarLista()" aria-label="Volver">
@@ -83,17 +111,20 @@
       <div class="title">Nueva cotización</div>
       <div style="width:36px;"></div>
     </header>
+
     <div class="search-sticky">
       <div class="search-bar" style="margin-bottom:0;">
         <i class="ti ti-search" aria-hidden="true"></i>
         <input type="text" id="buscadorCot" placeholder="Buscar producto..." autocomplete="off">
       </div>
     </div>
+
     <main class="page-content">
       <div id="listaProductosCot">
         <div style="text-align:center;padding:40px;"><div class="spinner"></div></div>
       </div>
     </main>
+
     <div class="carrito-wrap">
       <div class="carrito-header" onclick="toggleCarrito()">
         <div class="carrito-titulo">
@@ -104,7 +135,9 @@
         <i class="ti ti-chevron-up" id="cotChevron" aria-hidden="true"></i>
       </div>
       <div id="cotBody">
-        <div class="carrito-items" id="cotItems"><div class="carrito-vacio">Sin productos aún</div></div>
+        <div class="carrito-items" id="cotItems">
+          <div class="carrito-vacio">Sin productos aún</div>
+        </div>
         <div class="carrito-footer" id="cotFooter" style="display:none;">
           <div class="total-row">
             <span class="total-label">Total cotización</span>
@@ -125,6 +158,7 @@
     <a href="cotizaciones.html" class="nav-item active"><i class="ti ti-file-text" aria-hidden="true"></i>Cotizar</a>
   </nav>
 
+  <!-- MODAL: Datos de cotización -->
   <div class="modal-overlay hidden" id="modalDatosCot">
     <div class="modal">
       <div class="modal-handle"></div>
@@ -154,6 +188,7 @@
     </div>
   </div>
 
+  <!-- MODAL: Ver cotización generada -->
   <div class="modal-overlay hidden" id="modalVerCot">
     <div class="modal">
       <div class="modal-handle"></div>
@@ -167,17 +202,26 @@
     </div>
   </div>
 
+  <!-- MODAL: Cambiar estado -->
   <div class="modal-overlay hidden" id="modalEstado">
     <div class="modal">
       <div class="modal-handle"></div>
       <div class="modal-title" id="estadoTitulo">Actualizar estado</div>
       <input type="hidden" id="estadoCotId">
       <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">¿Qué pasó con esta cotización?</p>
-      <button class="btn btn-success mt-8" onclick="cambiarEstado('aceptada')"><i class="ti ti-circle-check" aria-hidden="true"></i> Cliente aceptó</button>
-      <button class="btn mt-8" style="background:var(--danger-light);color:var(--danger);" onclick="cambiarEstado('rechazada')"><i class="ti ti-circle-x" aria-hidden="true"></i> Cliente rechazó</button>
-      <button class="btn btn-secondary mt-8" onclick="cambiarEstado('pendiente')"><i class="ti ti-clock" aria-hidden="true"></i> Sigue pendiente</button>
+      <button class="btn btn-success mt-8" onclick="cambiarEstado('aceptada')">
+        <i class="ti ti-circle-check" aria-hidden="true"></i> Cliente aceptó
+      </button>
+      <button class="btn mt-8" style="background:var(--danger-light);color:var(--danger);" onclick="cambiarEstado('rechazada')">
+        <i class="ti ti-circle-x" aria-hidden="true"></i> Cliente rechazó
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cambiarEstado('pendiente')">
+        <i class="ti ti-clock" aria-hidden="true"></i> Sigue pendiente
+      </button>
       <div class="divider"></div>
-      <button class="btn" style="background:var(--danger-light);color:var(--danger);" onclick="eliminarEsta()"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar cotización</button>
+      <button class="btn" style="background:var(--danger-light);color:var(--danger);" onclick="eliminarEsta()">
+        <i class="ti ti-trash" aria-hidden="true"></i> Eliminar cotización
+      </button>
       <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalEstado')">Cancelar</button>
     </div>
   </div>
@@ -189,66 +233,102 @@
     import { getProductos } from '../js/productos.js'
     import { crearCotizacion, getCotizaciones, actualizarEstado, eliminarCotizacion } from '../js/cotizaciones.js'
 
-    let productos=[], carrito=[], cotActual=null, cotizaciones=[], estadoFiltro='todos', carritoOpen=true
+    let productos  = []
+    let carrito    = []
+    let cotActual  = null
+    let cotizaciones = []
+    let estadoFiltro = 'todos'
+    let carritoOpen  = true
 
-    async function init() { await requireAuth(); await cargarCotizaciones() }
+    async function init() {
+      await requireAuth()
+      await cargarCotizaciones()
+    }
+
+    // ── LISTA ──────────────────────────────────────────
 
     async function cargarCotizaciones() {
-      try { cotizaciones = await getCotizaciones(); renderLista() }
-      catch (e) { mostrarToast('Error al cargar cotizaciones') }
+      try {
+        cotizaciones = await getCotizaciones()
+        renderLista()
+      } catch (e) { mostrarToast('Error al cargar cotizaciones') }
     }
 
     function renderLista() {
       const el = document.getElementById('listaCotizaciones')
-      let lista = estadoFiltro === 'todos' ? cotizaciones : cotizaciones.filter(c => c.estado === estadoFiltro)
-      if (lista.length === 0) { el.innerHTML = `<div class="empty-state"><i class="ti ti-file-off"></i><p>No hay cotizaciones aquí</p></div>`; return }
+      let lista = cotizaciones
+      if (estadoFiltro !== 'todos') lista = cotizaciones.filter(c => c.estado === estadoFiltro)
+
+      if (lista.length === 0) {
+        el.innerHTML = `<div class="empty-state"><i class="ti ti-file-off"></i><p>No hay cotizaciones aquí</p></div>`
+        return
+      }
+
       el.innerHTML = lista.map(c => {
-        const fecha = new Date(c.creado_en).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})
-        const vence = c.vence_en ? new Date(c.vence_en).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'}) : '—'
-        const items = (c.detalle_cotizaciones||[])
-        const preview = items.slice(0,3).map(i=>`${i.nombre_producto} ×${i.cantidad}`).join(', ')
-        const badgeClass = c.estado==='aceptada'?'badge-green':c.estado==='rechazada'?'badge-red':'badge-amber'
-        const badgeText  = c.estado==='aceptada'?'Aceptada':c.estado==='rechazada'?'Rechazada':'Pendiente'
-        const numero = String(c.numero).padStart(4,'0')
-        return `<div class="cot-card">
-          <div class="cot-header">
-            <div><div class="cot-num">Cotización #${numero}</div><div class="cot-cliente">${c.cliente}</div></div>
-            <span class="badge ${badgeClass}">${badgeText}</span>
-          </div>
-          <div class="cot-items-preview">${preview}${items.length>3?` y ${items.length-3} más`:''}</div>
-          <div class="cot-footer">
-            <span class="cot-fecha">📅 ${fecha} · vence ${vence}</span>
-            <span class="cot-total">S/ ${Number(c.total).toFixed(2)}</span>
-          </div>
-          <div class="cot-acciones">
-            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="verCotizacion('${c.id}')"><i class="ti ti-eye" aria-hidden="true"></i> Ver</button>
-            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="abrirEstado('${c.id}','${c.cliente.replace(/'/g,"\\'")}')"><i class="ti ti-edit" aria-hidden="true"></i> Estado</button>
-          </div>
-        </div>`
+        const fecha   = new Date(c.creado_en).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' })
+        const vence   = c.vence_en ? new Date(c.vence_en).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit' }) : '—'
+        const items   = (c.detalle_cotizaciones || [])
+        const preview = items.slice(0,3).map(i => `${i.nombre_producto} ×${i.cantidad}`).join(', ')
+        const badgeClass = c.estado === 'aceptada' ? 'badge-green' : c.estado === 'rechazada' ? 'badge-red' : 'badge-amber'
+        const badgeText  = c.estado === 'aceptada' ? 'Aceptada' : c.estado === 'rechazada' ? 'Rechazada' : 'Pendiente'
+        const numero = String(c.numero).padStart(4, '0')
+
+        return `
+          <div class="cot-card">
+            <div class="cot-header">
+              <div>
+                <div class="cot-num">Cotización #${numero}</div>
+                <div class="cot-cliente">${c.cliente}</div>
+              </div>
+              <span class="badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <div class="cot-items-preview">${preview}${items.length > 3 ? ` y ${items.length-3} más` : ''}</div>
+            <div class="cot-footer">
+              <span class="cot-fecha">📅 ${fecha} · vence ${vence}</span>
+              <span class="cot-total">S/ ${Number(c.total).toFixed(2)}</span>
+            </div>
+            <div class="cot-acciones">
+              <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="verCotizacion('${c.id}')">
+                <i class="ti ti-eye" aria-hidden="true"></i> Ver
+              </button>
+              <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="abrirEstado('${c.id}', '${c.cliente.replace(/'/g,"\\'")}')">
+                <i class="ti ti-edit" aria-hidden="true"></i> Estado
+              </button>
+            </div>
+          </div>`
       }).join('')
     }
 
+    // ── NUEVA COTIZACIÓN ───────────────────────────────
+
     window.mostrarLista = function() {
-      document.getElementById('vistaLista').style.display='block'
-      document.getElementById('vistaNueva').style.display='none'
-      carrito=[]; renderCarrito(); cargarCotizaciones()
+      document.getElementById('vistaLista').style.display = 'block'
+      document.getElementById('vistaNueva').style.display = 'none'
+      carrito = []
+      renderCarrito()
+      cargarCotizaciones()
     }
 
     document.getElementById('btnNuevaCot').onclick = async () => {
-      document.getElementById('vistaLista').style.display='none'
-      document.getElementById('vistaNueva').style.display='block'
+      document.getElementById('vistaLista').style.display = 'none'
+      document.getElementById('vistaNueva').style.display = 'block'
       await cargarProductosCot()
     }
 
-    async function cargarProductosCot(busqueda='') {
-      try { productos = await getProductos(busqueda); renderProductosCot() }
-      catch(e) { mostrarToast('Error al cargar productos') }
+    async function cargarProductosCot(busqueda = '') {
+      try {
+        productos = await getProductos(busqueda)
+        renderProductosCot()
+      } catch (e) { mostrarToast('Error al cargar productos') }
     }
 
     function renderProductosCot() {
       const el = document.getElementById('listaProductosCot')
-      if (!productos.length) { el.innerHTML=`<div class="empty-state"><i class="ti ti-package"></i><p>No se encontraron productos</p></div>`; return }
-      el.innerHTML = productos.map(p=>`
+      if (productos.length === 0) {
+        el.innerHTML = `<div class="empty-state"><i class="ti ti-package"></i><p>No se encontraron productos</p></div>`
+        return
+      }
+      el.innerHTML = productos.map(p => `
         <div class="prod-item" onclick="agregarProducto('${p.id}')">
           <div class="prod-ico"><i class="ti ti-package" aria-hidden="true"></i></div>
           <div class="prod-nombre">${p.nombre}</div>
@@ -257,77 +337,103 @@
     }
 
     window.agregarProducto = function(id) {
-      const prod = productos.find(p=>p.id===id); if (!prod) return
-      const existe = carrito.find(i=>i.producto_id===id)
-      if (existe) existe.cantidad++
-      else carrito.push({producto_id:prod.id,nombre:prod.nombre,precio_unitario:Number(prod.precio),cantidad:1})
-      renderCarrito(); mostrarToast(prod.nombre+' agregado')
+      const prod = productos.find(p => p.id === id)
+      if (!prod) return
+      const existe = carrito.find(i => i.producto_id === id)
+      if (existe) { existe.cantidad++ }
+      else { carrito.push({ producto_id: prod.id, nombre: prod.nombre, precio_unitario: Number(prod.precio), cantidad: 1 }) }
+      renderCarrito()
+      mostrarToast(`${prod.nombre} agregado`)
     }
 
     function renderCarrito() {
-      const itemsEl=document.getElementById('cotItems'), footerEl=document.getElementById('cotFooter')
-      const countEl=document.getElementById('cotCount'), totalEl=document.getElementById('cotTotal')
-      countEl.textContent = carrito.reduce((s,i)=>s+i.cantidad,0)
-      if (!carrito.length) { itemsEl.innerHTML=`<div class="carrito-vacio">Sin productos aún</div>`; footerEl.style.display='none'; return }
-      footerEl.style.display='block'
-      totalEl.textContent = 'S/ '+carrito.reduce((s,i)=>s+i.precio_unitario*i.cantidad,0).toFixed(2)
-      itemsEl.innerHTML = carrito.map((item,idx)=>`
+      const itemsEl  = document.getElementById('cotItems')
+      const footerEl = document.getElementById('cotFooter')
+      const countEl  = document.getElementById('cotCount')
+      const totalEl  = document.getElementById('cotTotal')
+      const totalItems = carrito.reduce((s, i) => s + i.cantidad, 0)
+      const total      = carrito.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0)
+      countEl.textContent = totalItems
+
+      if (carrito.length === 0) {
+        itemsEl.innerHTML = `<div class="carrito-vacio">Sin productos aún</div>`
+        footerEl.style.display = 'none'; return
+      }
+      footerEl.style.display = 'block'
+      totalEl.textContent = `S/ ${total.toFixed(2)}`
+      itemsEl.innerHTML = carrito.map((item, idx) => `
         <div class="carrito-item">
           <div class="carrito-nombre">${item.nombre}</div>
           <div class="qty-ctrl">
-            <div class="qty-btn" onclick="cambiarQty(${idx},-1)">−</div>
+            <div class="qty-btn" onclick="cambiarQty(${idx}, -1)">−</div>
             <div class="qty-num">${item.cantidad}</div>
-            <div class="qty-btn" onclick="cambiarQty(${idx},1)">+</div>
+            <div class="qty-btn" onclick="cambiarQty(${idx}, 1)">+</div>
           </div>
-          <div class="item-sub">S/ ${(item.precio_unitario*item.cantidad).toFixed(2)}</div>
+          <div class="item-sub">S/ ${(item.precio_unitario * item.cantidad).toFixed(2)}</div>
         </div>`).join('')
     }
 
-    window.cambiarQty = function(idx,delta) {
-      const item=carrito[idx]; if(!item) return
-      const n=item.cantidad+delta
-      if(n<=0) carrito.splice(idx,1); else item.cantidad=n
+    window.cambiarQty = function(idx, delta) {
+      const item = carrito[idx]; if (!item) return
+      const nueva = item.cantidad + delta
+      if (nueva <= 0) carrito.splice(idx, 1)
+      else item.cantidad = nueva
       renderCarrito()
     }
 
     window.toggleCarrito = function() {
-      carritoOpen=!carritoOpen
-      document.getElementById('cotBody').style.display=carritoOpen?'flex':'none'
-      document.getElementById('cotBody').style.flexDirection='column'
-      document.getElementById('cotChevron').className=carritoOpen?'ti ti-chevron-down':'ti ti-chevron-up'
+      carritoOpen = !carritoOpen
+      document.getElementById('cotBody').style.display = carritoOpen ? 'flex' : 'none'
+      document.getElementById('cotBody').style.flexDirection = 'column'
+      document.getElementById('cotChevron').className = carritoOpen ? 'ti ti-chevron-down' : 'ti ti-chevron-up'
     }
 
     window.abrirModalCot = function() {
-      if(!carrito.length) return
-      document.getElementById('cotCliente').value=''
-      document.getElementById('cotNotas').value=''
-      document.getElementById('cotVence').value='7'
-      document.getElementById('errCot').style.display='none'
+      if (carrito.length === 0) return
+      document.getElementById('cotCliente').value = ''
+      document.getElementById('cotNotas').value   = ''
+      document.getElementById('cotVence').value   = '7'
+      document.getElementById('errCot').style.display = 'none'
       document.getElementById('modalDatosCot').classList.remove('hidden')
     }
 
     window.generarCotizacion = async function() {
-      const cliente=document.getElementById('cotCliente').value.trim()
-      const notas=document.getElementById('cotNotas').value.trim()
-      const vence=parseInt(document.getElementById('cotVence').value)||7
-      const errEl=document.getElementById('errCot'), btn=document.getElementById('btnGenerarCot')
-      if(!cliente){errEl.textContent='El nombre del cliente es obligatorio';errEl.style.display='block';return}
-      btn.disabled=true; document.getElementById('btnCotTxt').textContent='Generando...'; errEl.style.display='none'
+      const cliente = document.getElementById('cotCliente').value.trim()
+      const notas   = document.getElementById('cotNotas').value.trim()
+      const vence   = parseInt(document.getElementById('cotVence').value) || 7
+      const errEl   = document.getElementById('errCot')
+      const btn     = document.getElementById('btnGenerarCot')
+
+      if (!cliente) { errEl.textContent = 'El nombre del cliente es obligatorio'; errEl.style.display = 'block'; return }
+
+      btn.disabled = true
+      document.getElementById('btnCotTxt').textContent = 'Generando...'
+      errEl.style.display = 'none'
+
       try {
-        cotActual = await crearCotizacion(cliente,carrito,notas,vence)
+        cotActual = await crearCotizacion(cliente, carrito, notas, vence)
         cerrarModal('modalDatosCot')
-        mostrarDocCotizacion(cotActual,cliente,notas,carrito)
-      } catch(e) { errEl.textContent='Error al generar. Intenta de nuevo.'; errEl.style.display='block' }
-      finally { btn.disabled=false; document.getElementById('btnCotTxt').textContent='Generar cotización' }
+        mostrarDocCotizacion(cotActual, cliente, notas, carrito)
+      } catch (e) {
+        errEl.textContent = 'Error al generar. Intenta de nuevo.'
+        errEl.style.display = 'block'
+      } finally {
+        btn.disabled = false
+        document.getElementById('btnCotTxt').textContent = 'Generar cotización'
+      }
     }
 
-    function mostrarDocCotizacion(cot,cliente,notas,items) {
-      const total=items.reduce((s,i)=>s+i.precio_unitario*i.cantidad,0)
-      const fecha=new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})
-      const numero=String(cot.numero).padStart(4,'0')
-      const vence=new Date(cot.vence_en).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})
-      const itemsHTML=items.map(i=>`<div class="cot-doc-row"><span>${i.nombre} ×${i.cantidad}</span><span>S/ ${(i.precio_unitario*i.cantidad).toFixed(2)}</span></div>`).join('')
-      document.getElementById('cotDocContenido').innerHTML=`
+    function mostrarDocCotizacion(cot, cliente, notas, items) {
+      const total  = items.reduce((s, i) => s + i.precio_unitario * i.cantidad, 0)
+      const fecha  = new Date().toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' })
+      const numero = String(cot.numero).padStart(4, '0')
+      const vence  = new Date(cot.vence_en).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' })
+
+      const itemsHTML = items.map(i =>
+        `<div class="cot-doc-row"><span>${i.nombre} ×${i.cantidad}</span><span>S/ ${(i.precio_unitario * i.cantidad).toFixed(2)}</span></div>`
+      ).join('')
+
+      document.getElementById('cotDocContenido').innerHTML = `
         <div class="cot-doc" id="cotDocTexto">
           <div class="cot-doc-titulo">MI TIENDA</div>
           <div class="cot-doc-sub">Tienda de Útiles Escolares</div>
@@ -340,68 +446,92 @@
           ${itemsHTML}
           <hr class="cot-doc-linea">
           <div class="cot-doc-total"><span>TOTAL</span><span>S/ ${total.toFixed(2)}</span></div>
-          ${notas?`<div class="cot-doc-nota">Nota: ${notas}</div>`:''}
+          ${notas ? `<div class="cot-doc-nota">Nota: ${notas}</div>` : ''}
           <hr class="cot-doc-linea">
           <div class="cot-doc-nota" style="text-align:center;">Esta cotización no compromete stock.</div>
         </div>`
+
       document.getElementById('modalVerCot').classList.remove('hidden')
     }
 
     window.compartirCotizacion = function() {
-      const texto=document.getElementById('cotDocTexto').innerText
-      if(navigator.share){navigator.share({title:'Cotización',text:texto})}
-      else{navigator.clipboard.writeText(texto);mostrarToast('Cotización copiada')}
+      const texto = document.getElementById('cotDocTexto').innerText
+      if (navigator.share) { navigator.share({ title: 'Cotización', text: texto }) }
+      else { navigator.clipboard.writeText(texto); mostrarToast('Cotización copiada') }
     }
+
+    // ── VER / ESTADO ───────────────────────────────────
 
     window.verCotizacion = async function(id) {
-      const cot=cotizaciones.find(c=>c.id===id); if(!cot) return
-      const items=(cot.detalle_cotizaciones||[]).map(d=>({nombre:d.nombre_producto,cantidad:d.cantidad,precio_unitario:d.precio_unitario}))
-      mostrarDocCotizacion(cot,cot.cliente,cot.notas||'',items)
+      try {
+        const cot = cotizaciones.find(c => c.id === id)
+        if (!cot) return
+        const items = (cot.detalle_cotizaciones || []).map(d => ({
+          nombre: d.nombre_producto, cantidad: d.cantidad, precio_unitario: d.precio_unitario
+        }))
+        mostrarDocCotizacion(cot, cot.cliente, cot.notas || '', items)
+      } catch (e) { mostrarToast('Error al cargar cotización') }
     }
 
-    window.abrirEstado = function(id,cliente) {
-      document.getElementById('estadoCotId').value=id
-      document.getElementById('estadoTitulo').textContent=cliente
+    window.abrirEstado = function(id, cliente) {
+      document.getElementById('estadoCotId').value = id
+      document.getElementById('estadoTitulo').textContent = cliente
       document.getElementById('modalEstado').classList.remove('hidden')
     }
 
     window.cambiarEstado = async function(estado) {
-      const id=document.getElementById('estadoCotId').value
-      try { await actualizarEstado(id,estado); cerrarModal('modalEstado'); mostrarToast('Estado: '+estado); await cargarCotizaciones() }
-      catch(e) { mostrarToast('Error al actualizar') }
+      const id = document.getElementById('estadoCotId').value
+      try {
+        await actualizarEstado(id, estado)
+        cerrarModal('modalEstado')
+        mostrarToast(`Estado actualizado: ${estado}`)
+        await cargarCotizaciones()
+      } catch (e) { mostrarToast('Error al actualizar') }
     }
 
     window.eliminarEsta = async function() {
-      const id=document.getElementById('estadoCotId').value
-      if(!confirm('¿Eliminar esta cotización?')) return
-      try { await eliminarCotizacion(id); cerrarModal('modalEstado'); mostrarToast('Eliminada'); await cargarCotizaciones() }
-      catch(e) { mostrarToast('Error al eliminar') }
+      const id = document.getElementById('estadoCotId').value
+      if (!confirm('¿Eliminar esta cotización?')) return
+      try {
+        await eliminarCotizacion(id)
+        cerrarModal('modalEstado')
+        mostrarToast('Cotización eliminada')
+        await cargarCotizaciones()
+      } catch (e) { mostrarToast('Error al eliminar') }
     }
 
-    document.querySelectorAll('.tab-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'))
-        btn.classList.add('active'); estadoFiltro=btn.dataset.estado; renderLista()
+    // ── FILTROS Y UTILIDADES ───────────────────────────
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        estadoFiltro = btn.dataset.estado
+        renderLista()
       })
     })
 
     let busqTimer
-    document.getElementById('buscadorCot').addEventListener('input',e=>{
-      clearTimeout(busqTimer); busqTimer=setTimeout(()=>cargarProductosCot(e.target.value),350)
+    document.getElementById('buscadorCot').addEventListener('input', e => {
+      clearTimeout(busqTimer)
+      busqTimer = setTimeout(() => cargarProductosCot(e.target.value), 350)
     })
 
-    document.querySelectorAll('.modal-overlay').forEach(o=>{
-      o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden')})
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', e => { if (e.target === o) o.classList.add('hidden') })
     })
 
-    window.cerrarModal=function(id){document.getElementById(id).classList.add('hidden')}
+    window.cerrarModal = function(id) { document.getElementById(id).classList.add('hidden') }
 
-    function mostrarToast(msg){
-      const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show')
-      setTimeout(()=>t.classList.remove('show'),2500)
+    function mostrarToast(msg) {
+      const t = document.getElementById('toast')
+      t.textContent = msg; t.classList.add('show')
+      setTimeout(() => t.classList.remove('show'), 2500)
     }
 
     init()
   </script>
+
+  <script src="../js/router.js"></script>
 </body>
 </html>
