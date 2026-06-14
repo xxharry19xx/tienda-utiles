@@ -8,7 +8,7 @@ export async function login(email, password) {
 
 export async function logout() {
   await supabase.auth.signOut()
-  window.location.href = '/index.html'
+  window.location.href = '/tienda-utiles/'
 }
 
 export async function getSession() {
