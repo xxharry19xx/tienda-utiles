@@ -205,35 +205,32 @@
   <div class="toast" id="toast"></div>
 
   <script type="module">
-    import { requireAuth, logout } from '../js/auth.js'
+    import { requireAuth } from '../js/auth.js'
+    import { initNav, initHeader } from '../js/nav.js'   // <- NUEVO
     import { supabase } from '../js/supabase.js'
 
     let periodoActual = 'hoy'
     let datosVentas   = []
 
-    window.handleLogout = async () => {
-      if (confirm('¿Cerrar sesión?')) await logout()
-    }
 
     function getRango(periodo) {
       const desde = new Date()
-      desde.setHours(0, 0, 0, 0)
+      desde.setHours(0,0,0,0)
       if (periodo === 'semana') desde.setDate(desde.getDate() - desde.getDay())
       if (periodo === 'mes')    desde.setDate(1)
       const hasta = new Date()
-      hasta.setHours(23, 59, 59, 999)
+      hasta.setHours(23,59,59,999)
       return { desde, hasta }
     }
 
     async function init() {
       const session = await requireAuth()
       if (!session) return
-
-      // Fecha en header
-      const hoy = new Date()
-      document.getElementById('greetingFecha').textContent =
-        hoy.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' })
-
+      await initHeader()           // <- NUEVO: carga header con nombre tienda
+      await initNav('inicio')      // <- NUEVO: carga nav según rol
+      const fechaEl = document.getElementById('greetingFecha')
+      if (fechaEl) fechaEl.textContent =
+        new Date().toLocaleDateString('es-PE', { weekday:'long', day:'numeric', month:'long' })
       await cargarDatos()
     }
 

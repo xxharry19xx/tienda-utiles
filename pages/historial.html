@@ -80,6 +80,7 @@
 
   <script type="module">
     import { requireAuth } from '../js/auth.js'
+    import { initNav } from '../js/nav.js'
     import { getVentas } from '../js/ventas.js'
 
     let ventas = []
@@ -88,6 +89,7 @@
 
     async function init() {
       await requireAuth()
+      await initNav('historial')
       await cargar()
     }
 

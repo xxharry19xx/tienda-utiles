@@ -214,6 +214,7 @@
   <script type="module">
     import { requireAuth } from '../js/auth.js'
     import { getProductos, crearProducto, editarProducto, eliminarProducto, actualizarStock } from '../js/productos.js'
+    import { initNav } from '../js/nav.js'   // <- NUEVO
 
     let productos = []
     let filtroActual = 'todos'
@@ -221,6 +222,7 @@
 
     async function init() {
       await requireAuth()
+      await initNav('inventario')
       await cargarProductos()
     }
 

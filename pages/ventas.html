@@ -208,8 +208,10 @@
 
   <script type="module">
     import { requireAuth } from '../js/auth.js'
+    import { initNav } from '../js/nav.js'
     import { getProductos } from '../js/productos.js'
     import { crearVenta } from '../js/ventas.js'
+    
 
     let productos    = []
     let carrito      = []
@@ -220,6 +222,7 @@
 
     async function init() {
       await requireAuth()
+      await initNav('ventas')
       await cargarProductos()
     }
 
