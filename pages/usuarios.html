@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Usuarios — Tienda Útiles</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    .usuario-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;}
+    .uc-top{display:flex;align-items:center;gap:12px;}
+    .uc-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;color:#fff;}
+    .uc-avatar.superadmin{background:linear-gradient(135deg,#4F46E5,#7C3AED);}
+    .uc-avatar.dueno{background:linear-gradient(135deg,#059669,#0891B2);}
+    .uc-avatar.vendedor{background:linear-gradient(135deg,#D97706,#DC2626);}
+    .uc-nombre{font-size:15px;font-weight:600;color:var(--gray-900);}
+    .uc-email{font-size:12px;color:var(--gray-400);margin-top:1px;}
+    .uc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+    .rol-badge{padding:3px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;}
+    .rol-badge.superadmin{background:#EDE9FE;color:#5B21B6;}
+    .rol-badge.dueno{background:#D1FAE5;color:#065f46;}
+    .rol-badge.vendedor{background:#FEF3C7;color:#92400e;}
+    .tienda-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;cursor:pointer;}
+    .tienda-card:active{background:var(--gray-50);}
+    .tc-nombre{font-size:15px;font-weight:600;color:var(--gray-900);}
+    .tc-slug{font-size:12px;color:var(--gray-400);margin-top:2px;font-family:monospace;}
+    .tc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+    .tabs-top{display:flex;gap:8px;margin-bottom:16px;}
+    .tab-top{flex:1;padding:9px;border-radius:var(--radius-md);font-size:13px;font-weight:600;text-align:center;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);cursor:pointer;}
+    .tab-top.active{background:var(--primary);color:var(--white);border-color:var(--primary);}
+    .modal-title{font-size:17px;font-weight:700;color:var(--gray-900);margin-bottom:14px;}
+    .rol-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+    .rol-opt{padding:10px;border-radius:var(--radius-md);border:2px solid var(--gray-200);text-align:center;cursor:pointer;transition:all .15s;}
+    .rol-opt .rol-ico{font-size:20px;margin-bottom:4px;}
+    .rol-opt .rol-nombre{font-size:12px;font-weight:600;color:var(--gray-700);}
+    .rol-opt .rol-desc{font-size:10px;color:var(--gray-400);margin-top:2px;}
+    .rol-opt.active{border-color:var(--primary);background:var(--primary-light);}
+    .rol-opt.active .rol-nombre{color:var(--primary);}
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div>
+      <div class="greeting"></div>
+      <div class="header-title">Gestión</div>
+    </div>
+    <button class="icon-btn" id="btnNuevo" aria-label="Nuevo">
+      <i class="ti ti-plus" aria-hidden="true"></i>
+    </button>
+  </header>
+
+  <main class="page-content" style="padding-top:16px;">
+    <div class="tabs-top" id="tabsTienda" style="display:none;">
+      <button class="tab-top active" data-tab="usuarios">Usuarios</button>
+      <button class="tab-top" data-tab="tiendas">Tiendas</button>
+    </div>
+    <div id="vistaUsuarios">
+      <div id="listaUsuarios"><div style="text-align:center;padding:40px;"><div class="spinner"></div></div></div>
+    </div>
+    <div id="vistaTiendas" style="display:none;">
+      <div id="listaTiendas"><div style="text-align:center;padding:40px;"><div class="spinner"></div></div></div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav"></nav>
+
+  <div class="modal-overlay hidden" id="modalUsuario">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Nuevo usuario</div>
+      <div class="form-group">
+        <label class="form-label" for="uNombre">Nombre</label>
+        <input class="form-input" type="text" id="uNombre" placeholder="Nombre completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="uEmail">Correo</label>
+        <input class="form-input" type="email" id="uEmail" placeholder="correo@ejemplo.com" inputmode="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="uPassword">Contraseña temporal</label>
+        <input class="form-input" type="text" id="uPassword" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rol</label>
+        <div class="rol-selector">
+          <div class="rol-opt active" data-rol="vendedor" onclick="selRol('vendedor')">
+            <div class="rol-ico">🛒</div>
+            <div class="rol-nombre">Vendedor</div>
+            <div class="rol-desc">Solo ventas y cotizaciones</div>
+          </div>
+          <div class="rol-opt" data-rol="dueno" onclick="selRol('dueno')">
+            <div class="rol-ico">👑</div>
+            <div class="rol-nombre">Dueño</div>
+            <div class="rol-desc">Acceso completo</div>
+          </div>
+        </div>
+      </div>
+      <div id="errUsuario" style="color:var(--danger);font-size:13px;margin-bottom:10px;display:none;"></div>
+      <button class="btn btn-primary" id="btnGuardarUsuario" onclick="guardarUsuario()">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span id="btnUsuarioTxt">Crear usuario</span>
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalUsuario')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="modalTienda">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Nueva tienda</div>
+      <div class="form-group">
+        <label class="form-label" for="tNombre">Nombre de la tienda</label>
+        <input class="form-input" type="text" id="tNombre" placeholder="Ej: Papelería San Martín">
+      </div>
+      <div id="errTienda" style="color:var(--danger);font-size:13px;margin-bottom:10px;display:none;"></div>
+      <button class="btn btn-primary" id="btnGuardarTienda" onclick="guardarTienda()">
+        <i class="ti ti-check" aria-hidden="true"></i>
+        <span id="btnTiendaTxt">Crear tienda</span>
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalTienda')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="modalOpcionesUsuario">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="opcionesNombre">Opciones</div>
+      <input type="hidden" id="opcionesUsuarioId">
+      <input type="hidden" id="opcionesUsuarioActivo">
+      <div class="form-group" style="margin-top:4px;">
+        <label class="form-label">Cambiar rol</label>
+        <div class="rol-selector">
+          <div class="rol-opt" data-rol="vendedor" onclick="selRolOpc('vendedor')">
+            <div class="rol-ico">🛒</div><div class="rol-nombre">Vendedor</div>
+          </div>
+          <div class="rol-opt" data-rol="dueno" onclick="selRolOpc('dueno')">
+            <div class="rol-ico">👑</div><div class="rol-nombre">Dueño</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="aplicarCambioRol()">
+        <i class="ti ti-check" aria-hidden="true"></i> Guardar rol
+      </button>
+      <div class="divider"></div>
+      <button class="btn" id="btnToggleUsuario" onclick="toggleUsuarioActivo()" style="background:var(--danger-light);color:var(--danger);">
+        <i class="ti ti-user-off" aria-hidden="true"></i>
+        <span id="toggleUsuarioTxt">Desactivar usuario</span>
+      </button>
+      <button class="btn btn-secondary mt-8" onclick="cerrarModal('modalOpcionesUsuario')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="../js/router.js"></script>
+
+  <script type="module">
+    import { requireAuth, getUsuarioCache, limpiarCache } from '../js/auth.js'
+    import { initNav } from '../js/nav.js'
+    import { supabase } from '../js/supabase.js'
+
+    let usuarioActual=null, tabActual='usuarios', rolSeleccionado='vendedor'
+    let rolOpcSeleccionado='vendedor', tiendaSelId=null
+
+    async function init() {
+      await requireAuth()
+      usuarioActual = await getUsuarioCache()
+      if (!usuarioActual) return
+      await initNav('usuarios')
+      if (usuarioActual.rol === 'superadmin') document.getElementById('tabsTienda').style.display='flex'
+      tiendaSelId = usuarioActual.tienda_id
+      await cargarUsuarios()
+    }
+
+    async function cargarUsuarios() {
+      const el = document.getElementById('listaUsuarios')
+      try {
+        let query = supabase.from('usuarios')
+          .select('id,nombre,rol,activo,creado_en,tienda_id,tiendas(nombre)')
+        if (usuarioActual.rol !== 'superadmin') query = query.eq('tienda_id', usuarioActual.tienda_id)
+        else if (tiendaSelId) query = query.eq('tienda_id', tiendaSelId)
+        const { data, error } = await query.order('creado_en', { ascending: false })
+        if (error) throw error
+        if (!data.length) {
+          el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i><p>No hay usuarios aún</p></div>`
+          return
+        }
+        el.innerHTML = data.map(u => {
+          const inicial = (u.nombre||'U')[0].toUpperCase()
+          const activo  = u.activo !== false
+          return `<div class="usuario-card" style="${!activo?'opacity:0.5;':''}">
+            <div class="uc-top">
+              <div class="uc-avatar ${u.rol}">${inicial}</div>
+              <div style="flex:1;">
+                <div class="uc-nombre">${u.nombre||'Sin nombre'}</div>
+                <div class="uc-email">${u.tiendas?.nombre||''}</div>
+              </div>
+              ${u.id!==usuarioActual.id
+                ?`<button class="btn btn-secondary btn-sm" onclick="abrirOpciones('${u.id}','${(u.nombre||'').replace(/'/g,\"\'\")}','${u.rol}',${activo})"><i class="ti ti-dots"></i></button>`
+                :'<span style="font-size:11px;color:var(--gray-400);">Tú</span>'}
+            </div>
+            <div class="uc-footer">
+              <span class="rol-badge ${u.rol}">${u.rol}</span>
+              <span style="font-size:11px;color:${activo?'var(--success)':'var(--danger)'};">${activo?'● Activo':'● Inactivo'}</span>
+            </div>
+          </div>`
+        }).join('')
+      } catch(e) { mostrarToast('Error al cargar usuarios') }
+    }
+
+    async function cargarTiendas() {
+      const el = document.getElementById('listaTiendas')
+      try {
+        const { data, error } = await supabase.from('tiendas')
+          .select('*, usuarios(id)').order('creado_en', { ascending: false })
+        if (error) throw error
+        if (!data.length) {
+          el.innerHTML=`<div class="empty-state"><i class="ti ti-building-store"></i><p>No hay tiendas aún</p></div>`
+          return
+        }
+        el.innerHTML = data.map(t => `
+          <div class="tienda-card" onclick="seleccionarTienda('${t.id}','${t.nombre}')">
+            <div class="row-between">
+              <div><div class="tc-nombre">${t.nombre}</div><div class="tc-slug">${t.slug}</div></div>
+              <span class="badge ${t.activo?'badge-green':'badge-red'}">${t.activo?'Activa':'Inactiva'}</span>
+            </div>
+            <div class="tc-footer">
+              <span style="font-size:12px;color:var(--gray-500);">${(t.usuarios||[]).length} usuarios</span>
+              <span style="font-size:11px;color:var(--gray-400);">${new Date(t.creado_en).toLocaleDateString('es-PE')}</span>
+            </div>
+          </div>`).join('')
+      } catch(e) { mostrarToast('Error al cargar tiendas') }
+    }
+
+    window.seleccionarTienda = function(id, nombre) {
+      tiendaSelId=id; cambiarTab('usuarios'); mostrarToast(`Viendo: ${nombre}`); cargarUsuarios()
+    }
+
+    window.abrirOpciones = function(id, nombre, rol, activo) {
+      rolOpcSeleccionado=rol
+      document.getElementById('opcionesUsuarioId').value=id
+      document.getElementById('opcionesUsuarioActivo').value=activo
+      document.getElementById('opcionesNombre').textContent=nombre||'Usuario'
+      document.querySelectorAll('#modalOpcionesUsuario .rol-opt').forEach(o=>o.classList.toggle('active',o.dataset.rol===rol))
+      const btn=document.getElementById('btnToggleUsuario'), txt=document.getElementById('toggleUsuarioTxt')
+      if(activo){btn.style.background='var(--danger-light)';btn.style.color='var(--danger)';txt.textContent='Desactivar usuario'}
+      else{btn.style.background='var(--success-light)';btn.style.color='var(--success)';txt.textContent='Activar usuario'}
+      document.getElementById('modalOpcionesUsuario').classList.remove('hidden')
+    }
+
+    window.selRolOpc = function(rol) {
+      rolOpcSeleccionado=rol
+      document.querySelectorAll('#modalOpcionesUsuario .rol-opt').forEach(o=>o.classList.toggle('active',o.dataset.rol===rol))
+    }
+
+    window.aplicarCambioRol = async function() {
+      const id=document.getElementById('opcionesUsuarioId').value
+      try {
+        await supabase.from('usuarios').update({rol:rolOpcSeleccionado}).eq('id',id)
+        mostrarToast('Rol actualizado'); cerrarModal('modalOpcionesUsuario'); cargarUsuarios()
+      } catch(e){ mostrarToast('Error al cambiar rol') }
+    }
+
+    window.toggleUsuarioActivo = async function() {
+      const id=document.getElementById('opcionesUsuarioId').value
+      const activo=document.getElementById('opcionesUsuarioActivo').value==='true'
+      try {
+        await supabase.from('usuarios').update({activo:!activo}).eq('id',id)
+        mostrarToast(activo?'Usuario desactivado':'Usuario activado')
+        cerrarModal('modalOpcionesUsuario'); cargarUsuarios()
+      } catch(e){ mostrarToast('Error al actualizar') }
+    }
+
+    window.selRol = function(rol) {
+      rolSeleccionado=rol
+      document.querySelectorAll('#modalUsuario .rol-opt').forEach(o=>o.classList.toggle('active',o.dataset.rol===rol))
+    }
+
+    window.guardarUsuario = async function() {
+      const nombre=document.getElementById('uNombre').value.trim()
+      const email=document.getElementById('uEmail').value.trim()
+      const password=document.getElementById('uPassword').value.trim()
+      const errEl=document.getElementById('errUsuario'), btn=document.getElementById('btnGuardarUsuario')
+      if(!nombre){errEl.textContent='El nombre es obligatorio';errEl.style.display='block';return}
+      if(!email){errEl.textContent='El correo es obligatorio';errEl.style.display='block';return}
+      if(password.length<6){errEl.textContent='Mínimo 6 caracteres';errEl.style.display='block';return}
+      btn.disabled=true; document.getElementById('btnUsuarioTxt').textContent='Creando...'; errEl.style.display='none'
+      try {
+        const {data:authData,error:authErr}=await supabase.auth.signUp({
+          email, password, options:{data:{nombre}}
+        })
+        if(authErr) throw authErr
+        await supabase.from('usuarios').insert({
+          id:authData.user.id,
+          tienda_id:tiendaSelId||usuarioActual.tienda_id,
+          rol:rolSeleccionado, nombre
+        })
+        mostrarToast('Usuario creado'); cerrarModal('modalUsuario'); limpiarCache(); cargarUsuarios()
+      } catch(e){errEl.textContent=e.message||'Error al crear usuario';errEl.style.display='block'}
+      finally{btn.disabled=false;document.getElementById('btnUsuarioTxt').textContent='Crear usuario'}
+    }
+
+    window.guardarTienda = async function() {
+      const nombre=document.getElementById('tNombre').value.trim()
+      const errEl=document.getElementById('errTienda'), btn=document.getElementById('btnGuardarTienda')
+      if(!nombre){errEl.textContent='El nombre es obligatorio';errEl.style.display='block';return}
+      btn.disabled=true; document.getElementById('btnTiendaTxt').textContent='Creando...'; errEl.style.display='none'
+      try {
+        const slug=nombre.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')+'-'+Date.now().toString(36)
+        await supabase.from('tiendas').insert({nombre,slug})
+        mostrarToast('Tienda creada'); cerrarModal('modalTienda'); cargarTiendas()
+      } catch(e){errEl.textContent='Error al crear tienda';errEl.style.display='block'}
+      finally{btn.disabled=false;document.getElementById('btnTiendaTxt').textContent='Crear tienda'}
+    }
+
+    function cambiarTab(tab) {
+      tabActual=tab
+      document.querySelectorAll('.tab-top').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab))
+      document.getElementById('vistaUsuarios').style.display=tab==='usuarios'?'block':'none'
+      document.getElementById('vistaTiendas').style.display=tab==='tiendas'?'block':'none'
+      document.getElementById('btnNuevo').innerHTML=tab==='tiendas'
+        ?'<i class="ti ti-building-store" aria-hidden="true"></i>'
+        :'<i class="ti ti-plus" aria-hidden="true"></i>'
+    }
+
+    document.querySelectorAll('.tab-top').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        cambiarTab(btn.dataset.tab)
+        btn.dataset.tab==='tiendas'?cargarTiendas():cargarUsuarios()
+      })
+    })
+
+    document.getElementById('btnNuevo').onclick = () => {
+      if(tabActual==='tiendas'){
+        document.getElementById('tNombre').value=''; document.getElementById('errTienda').style.display='none'
+        document.getElementById('modalTienda').classList.remove('hidden')
+      } else {
+        document.getElementById('uNombre').value=''; document.getElementById('uEmail').value=''
+        document.getElementById('uPassword').value=''; document.getElementById('errUsuario').style.display='none'
+        rolSeleccionado='vendedor'
+        document.querySelectorAll('#modalUsuario .rol-opt').forEach(o=>o.classList.toggle('active',o.dataset.rol==='vendedor'))
+        document.getElementById('modalUsuario').classList.remove('hidden')
+      }
+    }
+
+    window.cerrarModal = id => document.getElementById(id).classList.add('hidden')
+    document.addEventListener('click',e=>{if(e.target.classList.contains('modal-overlay'))e.target.classList.add('hidden')})
+
+    function mostrarToast(msg){
+      const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show')
+      setTimeout(()=>t.classList.remove('show'),2500)
+    }
+
+    init()
+  </script>
+</body>
+</html>
