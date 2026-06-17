@@ -417,6 +417,15 @@
       if (e.target.classList.contains('modal-overlay')) e.target.classList.add('hidden')
     })
 
+    // DEBUG TEMPORAL - borrar después
+    const { data: u, error: e } = await supabase
+      .from('usuarios')
+      .select('*, tiendas(id, nombre)')
+      .eq('id', (await supabase.auth.getSession()).data.session.user.id)
+      .single()
+    console.log('USUARIO:', JSON.stringify(u))
+    console.log('ERROR:', JSON.stringify(e))
+
     init()
   </script>
 
